@@ -1,0 +1,42 @@
+name: BotVoice
+options:
+  bundleIdPrefix: ai.openclaw
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    DEVELOPMENT_TEAM: "V22RUH5HKD"
+
+targets:
+  BotVoice:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.openclaw.heyopenclaw
+        INFOPLIST_FILE: Sources/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: "Hey OpenClaw"
+        UILaunchScreen:
+          UIColorName: ""
+        NSMicrophoneUsageDescription: "BotVoice braucht das Mikrofon um deine Sprachnachrichten aufzunehmen und an deinen Telegram-Bot zu schicken."
+        NSSpeechRecognitionUsageDescription: "BotVoice nutzt Spracherkennung um auf dein Hotword zu reagieren."
+        UIBackgroundModes:
+          - audio
+          - fetch
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    dependencies: []

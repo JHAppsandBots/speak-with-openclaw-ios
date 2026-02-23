@@ -1,0 +1,359 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09401CD664E5B62C32D785F5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54134169EEC75B734774E774 /* SettingsView.swift */; };
+		33D46DF109B51CA95A3A09A4 /* BotSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973CC8690FA67412B9B1F86B /* BotSelectView.swift */; };
+		48FDCB7136A69B89DBF67743 /* SilenceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC4AD353999F7DA7D35F15 /* SilenceDetector.swift */; };
+		4F193205EE27B3EEDB202A80 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6012C44B191435B6F2480F /* Models.swift */; };
+		6D6CF261137A54FEAB5BF8C3 /* VADService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 149F1CBE85D9937511C48F4C /* VADService.swift */; };
+		70555891F2231F5C3E316012 /* TelegramService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C99245ED11A6EF123D5DD47 /* TelegramService.swift */; };
+		70C22B30C9FFEF95B700690C /* BotVoiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C344588B5C26B3B5D9AF54 /* BotVoiceApp.swift */; };
+		83C3BA36C3EB5346C306261F /* HotwordService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B89BDD6B84B47B880BE8E46 /* HotwordService.swift */; };
+		8777D6BAD8304A7E1A486CF8 /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB43F2E8B9FB31A29BD5179 /* ConversationView.swift */; };
+		A842FB24FF580F93D2E734FA /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886375A4C13707D88DD205B5 /* AudioService.swift */; };
+		B565D9CB671E4BAB91C442D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AD8D3956989862DB918ED2C /* Assets.xcassets */; };
+		B7B968D1399CB098EA44A739 /* VoIPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8789DF797ADD13DC99D1118 /* VoIPService.swift */; };
+		E25EB172DB70A0C7EEB8729D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF44A1ADB46120DC2D13D7FC /* OnboardingView.swift */; };
+		E354A69135450C112C97D70A /* RelayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9239440F78DCB9A2A4D458 /* RelayService.swift */; };
+		F4177E19221C8AAF777FFC24 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF25955ACF5B4B509A937A5 /* MainView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0CB43F2E8B9FB31A29BD5179 /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
+		149F1CBE85D9937511C48F4C /* VADService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VADService.swift; sourceTree = "<group>"; };
+		1A9239440F78DCB9A2A4D458 /* RelayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayService.swift; sourceTree = "<group>"; };
+		3EBA15D821C4028368746D03 /* BotVoice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BotVoice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		46BC4AD353999F7DA7D35F15 /* SilenceDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilenceDetector.swift; sourceTree = "<group>"; };
+		50F6F9A6A9217F5A924E9279 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		54134169EEC75B734774E774 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5C99245ED11A6EF123D5DD47 /* TelegramService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelegramService.swift; sourceTree = "<group>"; };
+		5D6012C44B191435B6F2480F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		7DF25955ACF5B4B509A937A5 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		886375A4C13707D88DD205B5 /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
+		973CC8690FA67412B9B1F86B /* BotSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotSelectView.swift; sourceTree = "<group>"; };
+		9AD8D3956989862DB918ED2C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9B89BDD6B84B47B880BE8E46 /* HotwordService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotwordService.swift; sourceTree = "<group>"; };
+		A2C344588B5C26B3B5D9AF54 /* BotVoiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotVoiceApp.swift; sourceTree = "<group>"; };
+		AF44A1ADB46120DC2D13D7FC /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		C8789DF797ADD13DC99D1118 /* VoIPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoIPService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		47D9BE53AC16341E515B321F = {
+			isa = PBXGroup;
+			children = (
+				8C6D8DAD8507601A27C23116 /* Sources */,
+				7EE069372625AF56863E9F00 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7EE069372625AF56863E9F00 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3EBA15D821C4028368746D03 /* BotVoice.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8C6D8DAD8507601A27C23116 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				9AD8D3956989862DB918ED2C /* Assets.xcassets */,
+				886375A4C13707D88DD205B5 /* AudioService.swift */,
+				973CC8690FA67412B9B1F86B /* BotSelectView.swift */,
+				A2C344588B5C26B3B5D9AF54 /* BotVoiceApp.swift */,
+				0CB43F2E8B9FB31A29BD5179 /* ConversationView.swift */,
+				9B89BDD6B84B47B880BE8E46 /* HotwordService.swift */,
+				50F6F9A6A9217F5A924E9279 /* Info.plist */,
+				7DF25955ACF5B4B509A937A5 /* MainView.swift */,
+				5D6012C44B191435B6F2480F /* Models.swift */,
+				AF44A1ADB46120DC2D13D7FC /* OnboardingView.swift */,
+				1A9239440F78DCB9A2A4D458 /* RelayService.swift */,
+				54134169EEC75B734774E774 /* SettingsView.swift */,
+				46BC4AD353999F7DA7D35F15 /* SilenceDetector.swift */,
+				5C99245ED11A6EF123D5DD47 /* TelegramService.swift */,
+				149F1CBE85D9937511C48F4C /* VADService.swift */,
+				C8789DF797ADD13DC99D1118 /* VoIPService.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E7FC8063AEE997E9B8BC501 /* BotVoice */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7515F73A7866E5D29D1C0FD1 /* Build configuration list for PBXNativeTarget "BotVoice" */;
+			buildPhases = (
+				3D1241F09A2AB27BCBBDA8D5 /* Sources */,
+				FE1BE9C8A50FBE79DB3B06E9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BotVoice;
+			packageProductDependencies = (
+			);
+			productName = BotVoice;
+			productReference = 3EBA15D821C4028368746D03 /* BotVoice.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2175A2E108EEB23CB0221172 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					0E7FC8063AEE997E9B8BC501 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F8475F5898542DE7F7420C85 /* Build configuration list for PBXProject "BotVoice" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 47D9BE53AC16341E515B321F;
+			minimizedProjectReferenceProxies = 1;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E7FC8063AEE997E9B8BC501 /* BotVoice */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FE1BE9C8A50FBE79DB3B06E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B565D9CB671E4BAB91C442D0 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3D1241F09A2AB27BCBBDA8D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A842FB24FF580F93D2E734FA /* AudioService.swift in Sources */,
+				33D46DF109B51CA95A3A09A4 /* BotSelectView.swift in Sources */,
+				70C22B30C9FFEF95B700690C /* BotVoiceApp.swift in Sources */,
+				8777D6BAD8304A7E1A486CF8 /* ConversationView.swift in Sources */,
+				83C3BA36C3EB5346C306261F /* HotwordService.swift in Sources */,
+				F4177E19221C8AAF777FFC24 /* MainView.swift in Sources */,
+				4F193205EE27B3EEDB202A80 /* Models.swift in Sources */,
+				E25EB172DB70A0C7EEB8729D /* OnboardingView.swift in Sources */,
+				E354A69135450C112C97D70A /* RelayService.swift in Sources */,
+				09401CD664E5B62C32D785F5 /* SettingsView.swift in Sources */,
+				48FDCB7136A69B89DBF67743 /* SilenceDetector.swift in Sources */,
+				70555891F2231F5C3E316012 /* TelegramService.swift in Sources */,
+				6D6CF261137A54FEAB5BF8C3 /* VADService.swift in Sources */,
+				B7B968D1399CB098EA44A739 /* VoIPService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		39B95A5BE919489E7A9A5025 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = V22RUH5HKD;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		94B3ACAE32B3270953797B65 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9YMCY74WN3;
+				INFOPLIST_FILE = Sources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.heyopenclaw;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B3FC853B13827F5532649C09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9YMCY74WN3;
+				INFOPLIST_FILE = Sources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.heyopenclaw;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D91E2B6667E1D77B81668D11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = V22RUH5HKD;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7515F73A7866E5D29D1C0FD1 /* Build configuration list for PBXNativeTarget "BotVoice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94B3ACAE32B3270953797B65 /* Debug */,
+				B3FC853B13827F5532649C09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F8475F5898542DE7F7420C85 /* Build configuration list for PBXProject "BotVoice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D91E2B6667E1D77B81668D11 /* Debug */,
+				39B95A5BE919489E7A9A5025 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2175A2E108EEB23CB0221172 /* Project object */;
+}
