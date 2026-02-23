@@ -6,6 +6,10 @@ Speak with OpenClaw is an iOS app that acts as a voice interface for Telegram bo
 
 ---
 
+> ⚠️ **Early Release** — This app works well enough for me to share, but it's not perfect. Expect rough edges, occasional bugs, and missing polish. If you find issues or want to improve it — PRs and feedback are very welcome.
+
+---
+
 ## 🎯 The Most Practical Mode: Real Conversation (VAD)
 
 **Conversation mode** is the recommended way to use the app — fully hands-free, no hotword, no button:
