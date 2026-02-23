@@ -1,18 +1,32 @@
 # Speak with OpenClaw 🦞🎤
 
-> Sprich mit deinen KI-Bots auf Telegram — freihändig, wie mit Siri.
+> Ein echter hands-free Dialog mit deinem KI-Bot — wie ein Gespräch, nicht wie ein Formular.
 
-Speak with OpenClaw ist eine iOS-App die als Sprach-Interface für Telegram-Bots funktioniert. Du sprichst, der Bot antwortet — Audio spielt automatisch ab. Mit Hotword-Erkennung ("Hey Bot") komplett hands-free.
+Speak with OpenClaw ist eine iOS-App als Sprach-Interface für Telegram-Bots via OpenClaw. Du sprichst, die App erkennt automatisch wann du fertig bist, der Bot antwortet — Audio spielt sofort ab. Kein Tippen, kein Button halten, kein Hotword nötig.
+
+---
+
+## 🎯 Der praktischste Modus: Echtes Gespräch (VAD)
+
+**Gesprächsmodus** ist der empfohlene Weg — komplett hands-free, kein Hotword, kein Button:
+
+1. Gesprächsmodus aktivieren → App kalibriert 2 Sekunden den Hintergrundlärm
+2. Einfach sprechen — die App erkennt automatisch Stimme vs. Umgebungsgeräusche
+3. Nach einer kurzen Pause: Nachricht wird gesendet, Bot antwortet
+4. Bot-Audio spielt ab → du antwortest direkt → echter Dialog
+
+Die App unterscheidet zuverlässig zwischen Sprache und Hintergrundgeräuschen (Musik, TV, Straße). Kein Button, kein Keyword, kein Aufwand.
 
 ---
 
 ## Was die App macht
 
-- 🎤 **Push-to-talk** — Mikrofon-Button halten, sprechen, loslassen
-- 👂 **Hotword** — "Hey Bot" sagen, App reagiert automatisch
+- 🗣️ **Gesprächsmodus (VAD)** — einfach sprechen, App erkennt Anfang und Ende automatisch ← **empfohlen**
+- 🎤 **Push-to-talk** — Button halten für volle Kontrolle
+- 👂 **Hotword** — "Hey Bot" als optionale Aktivierung
 - 🔊 **Auto-Play** — Bot-Antwort spielt sofort ab, kein Tippen
 - 📱 **Hintergrund** — funktioniert auch bei gesperrtem Handy (VoIP-Modus)
-- ⚙️ **Stille-Erkennung** — stoppt automatisch nach X Sekunden Stille (einstellbar 1–5s)
+- ⚙️ **Adaptive Stille-Erkennung** — erkennt Pausen intelligent (einstellbar 1–5s)
 - 💬 **Konversations-Verlauf** — alle Nachrichten als Chat
 
 ---
