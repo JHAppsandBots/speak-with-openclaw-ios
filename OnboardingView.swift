@@ -11,7 +11,7 @@ struct OnboardingView: View {
         [
             OnboardingStep(
                 icon: "🦞",
-                title: L("Willkommen bei\nHey OpenClaw", "Welcome to\nHey OpenClaw"),
+                title: L("Willkommen bei\nSpeak with OpenClaw", "Welcome to\nSpeak with OpenClaw"),
                 description: L(
                     "Sprich mit deinen KI-Bots auf Telegram — freihändig, wie mit Siri.",
                     "Talk to your AI bots on Telegram — hands-free, like Siri."
@@ -22,8 +22,8 @@ struct OnboardingView: View {
                 icon: "🖥️",
                 title: L("Was du brauchst", "What you need"),
                 description: L(
-                    "Hey OpenClaw ist eine App-Oberfläche. Du brauchst einen laufenden KI-Bot im Hintergrund.",
-                    "Hey OpenClaw is an app interface. You need a running AI bot in the background."
+                    "Speak with OpenClaw ist eine App-Oberfläche. Du brauchst einen laufenden KI-Bot im Hintergrund.",
+                    "Speak with OpenClaw is an app interface. You need a running AI bot in the background."
                 ),
                 detail: L(
                     "• Einen Mac mit OpenClaw\n• Einen Telegram-Bot (kostenlos)\n• Claude API Key (von Anthropic)",

@@ -169,8 +169,8 @@ python3 init_session.py
 Die User-ID eines Bots ist der erste Teil des Tokens (vor dem `:`).
 
 **Beispiel:**
-- Token: `8244960902:AAF6qfXjPxgDMvSnMAPyhfdxNZLsRBSJRE4`
-- User-ID: `8244960902`
+- Token: `1234567890:AABBccDDeeFFggHH...` (Beispiel)
+- User-ID: `1234567890` (erster Teil des Tokens)
 
 Diese User-ID wird im `voice-relay-server.py` gebraucht (siehe 4.2).
 

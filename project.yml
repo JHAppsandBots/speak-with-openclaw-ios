@@ -8,7 +8,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.10"
-    DEVELOPMENT_TEAM: "V22RUH5HKD"
+    DEVELOPMENT_TEAM: "YOUR_TEAM_ID"  # Xcode → Signing & Capabilities → Team
 
 targets:
   BotVoice:
@@ -27,7 +27,7 @@ targets:
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: "Hey OpenClaw"
+        CFBundleDisplayName: "Speak with OpenClaw"
         UILaunchScreen:
           UIColorName: ""
         NSMicrophoneUsageDescription: "BotVoice braucht das Mikrofon um deine Sprachnachrichten aufzunehmen und an deinen Telegram-Bot zu schicken."

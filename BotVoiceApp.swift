@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 
 @main
-struct HeyOpenClawApp: App {
+struct SpeakWithOpenClawApp: App {
     
     @StateObject private var voipService = VoIPService()
     @StateObject private var hotwordService = HotwordService()

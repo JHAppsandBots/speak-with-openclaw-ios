@@ -186,7 +186,7 @@ Standard-Hotword ist "Hey Bot". Du kannst es ändern:
 **Stille-Erkennung:**
 - Einstellungen → Stille-Schieberegler
 - 1 Sek = sehr schnell (für kurze Befehle)
-- 2 Sek = empfohlen (Johannes' Einstellung)
+- 2 Sek = empfohlen
 - 5 Sek = für längere Sätze
 
 ---
