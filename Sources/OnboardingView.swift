@@ -26,8 +26,8 @@ struct OnboardingView: View {
                     "Speak with Claw is an app interface. You need a running AI bot in the background."
                 ),
                 detail: L(
-                    "• Einen Mac mit OpenClaw\n• Einen Telegram-Bot (kostenlos)\n• Claude API Key (von Anthropic)",
-                    "• A Mac with OpenClaw\n• A Telegram bot (free)\n• Claude API Key (from Anthropic)"
+                    "• Einen Mac mit OpenClaw\n• Einen Telegram-Bot (kostenlos)\n• LLM API Key (z.B. Claude, GPT, etc.)",
+                    "• A Mac with OpenClaw\n• A Telegram bot (free)\n• LLM API Key (e.g. Claude, GPT, etc.)"
                 )
             ),
             OnboardingStep(

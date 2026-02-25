@@ -43,7 +43,7 @@ class HotwordService: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        let lang = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "de-DE"
+        let lang = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "en-US"
         speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: lang))
         speechRecognizer?.delegate = self
         hotwordVariants = buildVariants(hotword)

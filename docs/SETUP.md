@@ -778,7 +778,7 @@ Aktivierungswort (wie "Hey Siri") → App hört im Hintergrund → bei Erkennung
 │ Telegram Bot (@dein_bot)                                    │
 │ - Empfängt Audio vom User                                   │
 │ - OpenClaw Gateway verarbeitet (oder anderer Bot-Backend)   │
-│ - LLM antwortet (Claude, GPT, etc.)                         │
+│ - LLM antwortet (Claude, GPT, Gemini, etc.)                         │
 │ - TTS erstellt Audio (Google, ElevenLabs, etc.)            │
 │ - Schickt Audio zurück an User                              │
 └────────────┬────────────────────────────────────────────────┘

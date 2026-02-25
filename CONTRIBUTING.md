@@ -18,7 +18,7 @@ See [XCODE_SETUP.md](XCODE_SETUP.md) for full Xcode setup.
 |-----------|-------------|--------|
 | **OpenClaw** | AI bot gateway (runs on your Mac) | [openclaw.ai](https://openclaw.ai) |
 | **Telegram Bot** | Your AI bot's identity | [@BotFather](https://t.me/BotFather) |
-| **Claude API Key** | The AI brain | [console.anthropic.com](https://console.anthropic.com) |
+| **LLM API Key** | The AI brain | e.g. [Anthropic](https://console.anthropic.com) or [OpenAI](https://platform.openai.com) |
 | **Google Cloud API Key** | STT (speech-to-text) + TTS (text-to-speech) | [console.cloud.google.com](https://console.cloud.google.com) — enable *Cloud Speech-to-Text* + *Text-to-Speech* APIs |
 | **Tailscale** | Access your Mac from anywhere (optional but recommended) | [tailscale.com](https://tailscale.com) — free |
 | **macOS 14+** | Required for the OpenClaw gateway | — |

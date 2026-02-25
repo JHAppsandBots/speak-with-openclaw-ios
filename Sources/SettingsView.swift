@@ -3,7 +3,7 @@ import AudioToolbox
 
 // MARK: - Localization Helper (App-Level)
 func L(_ de: String, _ en: String) -> String {
-    let lang = UserDefaults.standard.string(forKey: "appLanguage") ?? "de"
+    let lang = UserDefaults.standard.string(forKey: "appLanguage") ?? "en"
     return lang == "en" ? en : de
 }
 
@@ -11,31 +11,17 @@ struct SettingsView: View {
 
     @AppStorage("serverURL")        private var serverURL = "http://192.168.0.X:18800"
     @AppStorage("hotword")          private var hotword = "hey bot"
-    @AppStorage("listenMode")       private var listenModeRaw = "off"
+    @AppStorage("listenMode")       private var listenModeRaw = "vad"
     @AppStorage("hotwordEnabled")   private var hotwordEnabled = false  // Legacy, nicht mehr direkt nutzen
     @AppStorage("silenceThreshold") private var silenceThreshold: Double = 2.0
-    @AppStorage("hotwordLanguage")  private var hotwordLanguage = "de-DE"
-    @AppStorage("appLanguage")      private var appLanguage = "de"
+    @AppStorage("hotwordLanguage")  private var hotwordLanguage = "en-US"
+    @AppStorage("appLanguage")      private var appLanguage = "en"
 
-    @AppStorage("activationSoundID") private var activationSoundID: Int = 1114
     @AppStorage("sendSoundID")       private var sendSoundID: Int = 1114  // Bloom 🌸
     @AppStorage("vadPauseHotword")   private var vadPauseHotword = "aufnahme pause"
     @AppStorage("vadResumeHotword")  private var vadResumeHotword = "aufnahme weiter"
-    @AppStorage("pauseOnSoundID")    private var pauseOnSoundID: Int = -2
-    @AppStorage("pauseOffSoundID")   private var pauseOffSoundID: Int = -3
 
     private struct SoundOption { let id: Int; let label: String }
-    private let soundOptions: [SoundOption] = [
-        SoundOption(id: -999, label: "🔇 Kein Ton"),
-        SoundOption(id: -1,   label: "💧 Plopp — kurzer Transient"),
-        SoundOption(id: 99,   label: "〰️ Sinus-Doppelton (260→390 Hz)"),
-        SoundOption(id: 1057, label: "Tink — kurzer Klick"),
-        SoundOption(id: 1103, label: "Knackiger Pip"),
-        SoundOption(id: 1106, label: "Key-Press Tink"),
-        SoundOption(id: 1113, label: "Anticipate — aufsteigend"),
-        SoundOption(id: 1114, label: "Bloom — weiches Pad 🌸"),
-        SoundOption(id: 1117, label: "Descent — abfallend"),
-    ]
 
     private let sendSoundOptions: [SoundOption] = [
         SoundOption(id: -999, label: "🔇 Kein Ton"),
@@ -45,24 +31,6 @@ struct SettingsView: View {
         SoundOption(id: 1003, label: "iMessage Swoosh"),
         SoundOption(id: 1016, label: "Tweet"),
         SoundOption(id: 1256, label: "Heller Pip"),
-    ]
-
-    private let pauseOnSoundOptions: [SoundOption] = [
-        SoundOption(id: -999, label: "🔇 Kein Ton"),
-        SoundOption(id: -2,   label: "↘️ Absteigend (Standard)"),
-        SoundOption(id: -1,   label: "💧 Plopp"),
-        SoundOption(id: 1013, label: "SMS-Ton"),
-        SoundOption(id: 1052, label: "Sms-Received 5"),
-        SoundOption(id: 1114, label: "🌸 Bloom"),
-    ]
-
-    private let pauseOffSoundOptions: [SoundOption] = [
-        SoundOption(id: -999, label: "🔇 Kein Ton"),
-        SoundOption(id: -3,   label: "↗️ Aufsteigend (Standard)"),
-        SoundOption(id: -1,   label: "💧 Plopp"),
-        SoundOption(id: 1013, label: "SMS-Ton"),
-        SoundOption(id: 1052, label: "Sms-Received 5"),
-        SoundOption(id: 1114, label: "🌸 Bloom"),
     ]
 
     private let availableLanguages: [(code: String, label: String)] = [
@@ -84,8 +52,10 @@ struct SettingsView: View {
 
     @State private var testResult: String?
     @State private var isTesting = false
+    @State private var showDeleteConfirmation = false
 
     var onSave: (() -> Void)?
+    var onClearChats: (() -> Void)?
 
     var body: some View {
         Form {
@@ -172,7 +142,7 @@ struct SettingsView: View {
                         TextField(L("z.B. aufnahme pause", "e.g. recording pause"), text: $vadPauseHotword)
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
-                        Text(L("Pause-Hotword", "Resume hotword"))
+                        Text(L("Resume-Hotword", "Resume hotword"))
                             .font(.caption).foregroundStyle(.secondary)
                         TextField(L("z.B. aufnahme weiter", "e.g. recording resume"), text: $vadResumeHotword)
                             .autocorrectionDisabled()
@@ -220,34 +190,6 @@ struct SettingsView: View {
                 }
             }
 
-            // MARK: - Aktivierungston wählen
-            Section {
-                ForEach(soundOptions, id: \.id) { s in
-                    Button {
-                        // Speichern + Vorschau
-                        activationSoundID = s.id
-                        UserDefaults.standard.set(s.id, forKey: "activationSoundID")
-                        HotwordService.playActivationSound()
-                    } label: {
-                        HStack {
-                            Image(systemName: activationSoundID == s.id
-                                  ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(activationSoundID == s.id ? .indigo : .secondary)
-                            Text(s.label)
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            Image(systemName: "play.circle")
-                                .foregroundStyle(.indigo.opacity(0.6))
-                                .font(.caption)
-                        }
-                    }
-                }
-            } header: {
-                Text("🔊 Aktivierungston (Aufnahme startet)")
-            } footer: {
-                Text("Antippen = anhören & auswählen.")
-            }
-
             // MARK: - Absende-Sound (Aufnahme endet)
             Section {
                 ForEach(sendSoundOptions, id: \.id) { s in
@@ -270,70 +212,40 @@ struct SettingsView: View {
                     }
                 }
             } header: {
-                Text("📤 Absende-Sound (Aufnahme endet)")
+                Text(L("📤 Absende-Sound (Aufnahme endet)", "📤 Send sound (recording ends)"))
             } footer: {
-                Text("Antippen = anhören & auswählen.")
+                Text(L("Antippen = anhören & auswählen.", "Tap = preview & select."))
             }
 
-            // MARK: - Pause-Ton (ein)
+            // MARK: - Chatverläufe löschen
             Section {
-                ForEach(pauseOnSoundOptions, id: \.id) { s in
-                    Button {
-                        pauseOnSoundID = s.id
-                        UserDefaults.standard.set(s.id, forKey: "pauseOnSoundID")
-                        HotwordService.playPauseOnSound()
-                    } label: {
-                        HStack {
-                            Image(systemName: pauseOnSoundID == s.id
-                                  ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(pauseOnSoundID == s.id ? .purple : .secondary)
-                            Text(s.label)
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            Image(systemName: "play.circle")
-                                .foregroundStyle(.purple.opacity(0.6))
-                                .font(.caption)
-                        }
+                Button(role: .destructive) {
+                    showDeleteConfirmation = true
+                } label: {
+                    HStack {
+                        Image(systemName: "trash")
+                        Text(L("Alle Chatverläufe löschen", "Delete all chat histories"))
                     }
                 }
-            } header: {
-                Text("⏸️ Pause-Ton (ein)")
-            } footer: {
-                Text("Antippen = anhören & auswählen.")
-            }
-
-            // MARK: - Pause-Ton (aus)
-            Section {
-                ForEach(pauseOffSoundOptions, id: \.id) { s in
-                    Button {
-                        pauseOffSoundID = s.id
-                        UserDefaults.standard.set(s.id, forKey: "pauseOffSoundID")
-                        HotwordService.playPauseOffSound()
-                    } label: {
-                        HStack {
-                            Image(systemName: pauseOffSoundID == s.id
-                                  ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(pauseOffSoundID == s.id ? .green : .secondary)
-                            Text(s.label)
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            Image(systemName: "play.circle")
-                                .foregroundStyle(.green.opacity(0.6))
-                                .font(.caption)
-                        }
+                .alert(
+                    L("Chatverläufe löschen?", "Delete chat histories?"),
+                    isPresented: $showDeleteConfirmation
+                ) {
+                    Button(L("Abbrechen", "Cancel"), role: .cancel) { }
+                    Button(L("Löschen", "Delete"), role: .destructive) {
+                        onClearChats?()
                     }
+                } message: {
+                    Text(L("Alle gespeicherten Chatverläufe werden unwiderruflich gelöscht.",
+                           "All saved chat histories will be permanently deleted."))
                 }
-            } header: {
-                Text("▶️ Pause-Ton (aus)")
             } footer: {
-                Text("Antippen = anhören & auswählen.")
+                Text(L("Löscht alle Chat-Nachrichten bei allen Bots.", "Deletes all chat messages for all bots."))
             }
 
         }
         .navigationTitle(L("Einstellungen", "Settings"))
         .onDisappear {
-            // Automatisch speichern wenn Settings verlassen werden
-            // (@AppStorage ist bereits in UserDefaults — onSave? informiert ViewModel
             onSave?()
         }
     }

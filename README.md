@@ -44,7 +44,7 @@ Speak with Claw is a **voice interface**. You need a running AI bot in the backg
 - Mac with macOS 14+
 - [OpenClaw](https://openclaw.ai) — the AI bot gateway (free, open source)
 - Telegram bot token — create one via [@BotFather](https://t.me/BotFather)
-- Claude API Key — from [console.anthropic.com](https://console.anthropic.com)
+- LLM API Key — e.g. from [Anthropic](https://console.anthropic.com) or [OpenAI](https://platform.openai.com)
 - Google Cloud API Key — for STT (speech-to-text) + TTS (text-to-speech), enable *Cloud Speech-to-Text* and *Text-to-Speech* APIs at [console.cloud.google.com](https://console.cloud.google.com)
 - [Tailscale](https://tailscale.com) — **recommended** for access outside your home network (free)
 
@@ -242,7 +242,7 @@ In the app: top left → select bot.
 
 - **Hotword detection:** 100% on-device, no cloud upload
 - **Voice recordings:** go only to your own Telegram bot
-- **AI responses:** via your own API (Anthropic/OpenAI) — you control everything
+- **AI responses:** via your own API (Claude, GPT, Gemini, etc.) — you control everything
 - No data is sent to the app developer
 
 ---
@@ -251,7 +251,7 @@ In the app: top left → select bot.
 
 - **App:** 24 hours free trial — then €6.99 one-time (App Store)
 - **OpenClaw:** free (open source)
-- **Claude API:** pay-per-use (~€0.003 per message with Sonnet)
+- **LLM API:** pay-per-use (e.g. ~€0.003 per message with Claude Sonnet)
 - **Google TTS/STT:** free up to 1M characters/month
 - **Telegram:** free
 

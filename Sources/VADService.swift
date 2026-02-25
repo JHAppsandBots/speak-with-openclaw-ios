@@ -23,6 +23,7 @@ class VADService: NSObject, ObservableObject {
     // MARK: - Callbacks
     var onRecordingComplete: ((URL) -> Void)?  // URL der fertigen Aufnahme
     var onRecordingStarted:  (() -> Void)?     // Sprache erkannt → UI-Feedback
+    var onRecordingDiscarded: (() -> Void)?    // Aufnahme verworfen (kein Wort erkannt)
     var onCalibrationDone:   (() -> Void)?     // Kalibrierung abgeschlossen
 
     // MARK: - Config
@@ -61,7 +62,7 @@ class VADService: NSObject, ObservableObject {
     private var validationTask: SFSpeechRecognitionTask?
     private var validationWordCount = 0
     private var validationTimer: Timer?
-    private var hasValidatedSpeech = false
+    @Published var hasValidatedSpeech = false
     private var lastRecognizedText = ""
 
     // MARK: - Init
@@ -363,6 +364,7 @@ class VADService: NSObject, ObservableObject {
             print("VADService: Kein Wort erkannt — Aufnahme verworfen (Hintergrundgeräusch)")
             if let url = outputURL { try? FileManager.default.removeItem(at: url) }
             outputURL = nil
+            onRecordingDiscarded?()
             startMonitoring()
             return
         }

@@ -53,7 +53,7 @@ struct MainView: View {
                                                  viewModel.vadIsActive    ? "ear.fill"  : "ear.trianglebadge.exclamationmark"
                                 )
                                 .font(.caption)
-                                .foregroundStyle(viewModel.vadIsRecording ? .orange :
+                                .foregroundStyle(viewModel.vadIsRecording ? .red :
                                                  viewModel.vadIsActive    ? .green  : .gray)
                             case .off:
                                 EmptyView()
@@ -85,14 +85,14 @@ struct MainView: View {
 
                         // Mikrofon-Button (kleiner)
                         ZStack {
-                            if viewModel.isRecording || viewModel.isPlaying || viewModel.hotwordService.isListening {
+                            if isActivelyRecording || viewModel.isPlaying || viewModel.vadIsActive || viewModel.hotwordService.isListening {
                                 ForEach(0..<3, id: \.self) { i in
                                     Circle()
                                         .stroke(pulseColor.opacity(0.3 - Double(i) * 0.08), lineWidth: 1.5)
                                         .frame(width: 120 + CGFloat(i * 50), height: 120 + CGFloat(i * 50))
                                         .scaleEffect(viewModel.pulseScale)
                                         .animation(
-                                            .easeInOut(duration: viewModel.isRecording ? 0.6 : 1.2)
+                                            .easeInOut(duration: isActivelyRecording ? 0.6 : 1.2)
                                             .repeatForever(autoreverses: true)
                                             .delay(Double(i) * 0.2),
                                             value: viewModel.pulseScale
@@ -108,8 +108,8 @@ struct MainView: View {
                                         .foregroundStyle(.white)
                                 }
                                 .shadow(color: pulseColor.opacity(0.45), radius: 30, y: 8)
-                                .scaleEffect(viewModel.isRecording ? 1.1 : 1.0)
-                                .animation(.spring(duration: 0.25), value: viewModel.isRecording)
+                                .scaleEffect(isActivelyRecording ? 1.1 : 1.0)
+                                .animation(.spring(duration: 0.25), value: isActivelyRecording)
                         }
                         .frame(height: 180)
                         .gesture(
@@ -127,16 +127,32 @@ struct MainView: View {
                         )
                     }
                     
-                    // MARK: — Unten: Letzte Antwort + Vorschläge
-                    if let response = viewModel.lastResponseText {
+                    // MARK: — Unten: Transkript + Antwort + Vorschläge
+                    if viewModel.lastUserTranscript != nil || viewModel.lastResponseText != nil {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 12) {
-                                Text(response)
-                                    .font(.callout)
-                                    .foregroundStyle(.white)
-                                    .multilineTextAlignment(.leading)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                // User-Transkript
+                                if let transcript = viewModel.lastUserTranscript {
+                                    HStack(alignment: .top, spacing: 6) {
+                                        Text("🎤")
+                                            .font(.caption)
+                                        Text(transcript)
+                                            .font(.callout)
+                                            .foregroundStyle(.gray)
+                                            .italic()
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                }
+
+                                // Bot-Antwort
+                                if let response = viewModel.lastResponseText {
+                                    Text(response)
+                                        .font(.callout)
+                                        .foregroundStyle(.white)
+                                        .multilineTextAlignment(.leading)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
 
                                 // Vorschläge
                                 if !viewModel.suggestions.isEmpty {
@@ -240,7 +256,7 @@ struct MainView: View {
                         }
                         
                         // Settings
-                        NavigationLink(destination: SettingsView(onSave: { viewModel.reloadConfig() })) {
+                        NavigationLink(destination: SettingsView(onSave: { viewModel.reloadConfig() }, onClearChats: { viewModel.clearAllChats() })) {
                             Image(systemName: "gear")
                                 .foregroundStyle(.white)
                         }
@@ -268,17 +284,28 @@ struct MainView: View {
         .animation(.easeInOut(duration: 0.15), value: viewModel.showHotwordFlash)
     }
     
+    /// True when confirmed speech is being recorded
+    /// Button press = always red; VAD = only red after speech validated
+    private var isActivelyRecording: Bool {
+        if viewModel.listenMode == .vad {
+            return viewModel.vadIsRecording && viewModel.vadHasValidatedSpeech
+        }
+        return viewModel.isRecording
+    }
+
     private var pulseColor: Color {
-        if viewModel.isRecording { return .red }
+        if isActivelyRecording { return .red }
         if viewModel.isPlaying { return .cyan }
+        if viewModel.vadIsActive { return .blue }
         if viewModel.hotwordService.isListening { return .blue }
         return .indigo
     }
     
     private var buttonGradient: LinearGradient {
         LinearGradient(
-            colors: viewModel.isRecording ? [.red, .orange] :
+            colors: isActivelyRecording   ? [.red, .red] :
                     viewModel.isPlaying    ? [.blue, .cyan]  :
+                    viewModel.vadIsActive   ? [.indigo, .blue] :
                     viewModel.hotwordService.isListening ? [.indigo, .blue] :
                     [.indigo, .purple],
             startPoint: .topLeading, endPoint: .bottomTrailing
@@ -286,8 +313,9 @@ struct MainView: View {
     }
     
     private var buttonIcon: String {
-        if viewModel.isRecording { return "waveform" }
+        if isActivelyRecording { return "waveform" }
         if viewModel.isPlaying   { return "speaker.wave.3.fill" }
+        if viewModel.vadIsActive  { return "ear.fill" }
         if viewModel.hotwordService.isListening { return "ear.fill" }
         return "mic.fill"
     }
@@ -303,9 +331,10 @@ class MainViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var statusText = L("Halten zum Sprechen", "Hold to speak")
     @Published var lastResponseText: String?
+    @Published var lastUserTranscript: String?
     @Published var suggestions: [String] = []
     // Pro Bot: eigener Verlauf + letzte Antwort
-    private var botMessages: [UUID: [Message]] = [:]
+    private var botMessages: [UUID: [Message]] = ChatHistory.loadAll()
     private var botLastResponse: [UUID: String] = [:]
     private var botSuggestions: [UUID: [String]] = [:]
     @Published var errorMessage: String?
@@ -329,11 +358,13 @@ class MainViewModel: ObservableObject {
     }
     @Published var pulseScale: CGFloat = 1.0
     @Published var isConnected = false
-    @Published var messages: [Message] = []
+    @Published var messages: [Message] = [] {
+        didSet { persistChats() }
+    }
     // Drei Hör-Modi: aus / Hotword / VAD (Gesprächsmodus)
     enum ListenMode: String { case off, hotword, vad }
 
-    @Published var listenMode: ListenMode = .off
+    @Published var listenMode: ListenMode = .vad
     @Published var showHotwordFlash = false
 
     // hotwordEnabled als computed var → kein Break im restlichen Code
@@ -343,6 +374,7 @@ class MainViewModel: ObservableObject {
     var vadIsActive:      Bool { vadService.isActive }
     var vadIsCalibrating: Bool { vadService.isCalibrating }
     var vadIsRecording:   Bool { vadService.isRecording }
+    var vadHasValidatedSpeech: Bool { vadService.hasValidatedSpeech }
 
     // MARK: - Services
     let hotwordService: HotwordService
@@ -382,7 +414,6 @@ class MainViewModel: ObservableObject {
                 self.isRecording = true
                 self.pulseScale = 1.15
                 self.statusText = L("🎙️ Aufnahme läuft...", "🎙️ Recording...")
-                let _ = HotwordService.playActivationSound()
             }
         }
 
@@ -395,6 +426,16 @@ class MainViewModel: ObservableObject {
                 HotwordService.playSendSound()
                 self.messages.append(Message(text: nil, audioURL: url, isFromUser: true))
                 await self.sendToBot(audioURL: url)
+            }
+        }
+
+        // VAD: Aufnahme verworfen (kein Wort erkannt) → UI zurücksetzen
+        vadService.onRecordingDiscarded = { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.isRecording = false
+                self.pulseScale = 1.0
+                self.statusText = L("👂 Höre zu...", "👂 Listening...")
             }
         }
 
@@ -425,11 +466,11 @@ class MainViewModel: ObservableObject {
         await testConnection()
         
         // Hör-Modus laden
-        let savedMode = UserDefaults.standard.string(forKey: "listenMode") ?? "off"
-        listenMode = ListenMode(rawValue: savedMode) ?? .off
+        let savedMode = UserDefaults.standard.string(forKey: "listenMode") ?? "vad"
+        listenMode = ListenMode(rawValue: savedMode) ?? .vad
         let savedHotword = UserDefaults.standard.string(forKey: "hotword") ?? "hey bot"
         hotwordService.hotword = savedHotword
-        let savedLanguage = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "de-DE"
+        let savedLanguage = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "en-US"
         hotwordService.language = savedLanguage
         vadService.language = savedLanguage
 
@@ -453,12 +494,12 @@ class MainViewModel: ObservableObject {
         // Hotword + Sprache aktualisieren
         let savedHotword = UserDefaults.standard.string(forKey: "hotword") ?? "hey bot"
         hotwordService.hotword = savedHotword
-        let savedLanguage = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "de-DE"
+        let savedLanguage = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "en-US"
         hotwordService.language = savedLanguage
         vadService.language = savedLanguage
 
         // Modus neu laden (kann in Settings geändert worden sein)
-        let newModeRaw = UserDefaults.standard.string(forKey: "listenMode") ?? "off"
+        let newModeRaw = UserDefaults.standard.string(forKey: "listenMode") ?? "vad"
         let newMode = ListenMode(rawValue: newModeRaw) ?? .off
         if newMode != listenMode {
             Task { await applyListenMode(newMode) }
@@ -531,7 +572,7 @@ class MainViewModel: ObservableObject {
         // Laufende Auto-Modi pausieren
         hotwordService.stopListening()
         vadService.stop()
-        
+
         do {
             _ = try audioService.startRecording()
             isRecording = true
@@ -565,6 +606,7 @@ class MainViewModel: ObservableObject {
     
     func sendTextToBot(text: String) {
         guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        lastUserTranscript = text
         messages.append(Message(text: text, audioURL: nil, isFromUser: true))
         Task { await sendTextToBotAsync(text: text) }
     }
@@ -584,23 +626,26 @@ class MainViewModel: ObservableObject {
             
             switch reply {
             case .voice(let voiceURL, let botText, _):
-                messages.append(Message(text: botText, audioURL: voiceURL, isFromUser: false))
-                if let t = botText {
+                let cleanedBot = botText.map { cleanBotResponse($0) }
+                messages.append(Message(text: cleanedBot, audioURL: voiceURL, isFromUser: false))
+                if let t = cleanedBot {
                     lastResponseText = t
                     suggestions = extractSuggestions(from: t)
                 }
                 statusText = L("🔊 Antwort...", "🔊 Reply...")
                 isPlaying = true
                 pulseScale = 1.1
+                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
                 try audioService.play(url: voiceURL)
                 while audioService.isPlaying {
                     try? await Task.sleep(for: .milliseconds(200))
                 }
                 
             case .text(let responseText, _):
-                lastResponseText = responseText
-                suggestions = extractSuggestions(from: responseText)
-                messages.append(Message(text: responseText, audioURL: nil, isFromUser: false))
+                let cleanedResp = cleanBotResponse(responseText)
+                lastResponseText = cleanedResp
+                suggestions = extractSuggestions(from: cleanedResp)
+                messages.append(Message(text: cleanedResp, audioURL: nil, isFromUser: false))
             }
             
             statusText = L("Halten zum Sprechen", "Hold to speak")
@@ -635,14 +680,17 @@ class MainViewModel: ObservableObject {
             switch reply {
             case .voice(let voiceURL, let botText, let transcript):
                 // User-Nachricht mit Transkript aktualisieren — stabile ID behalten!
-                if let t = transcript, !t.isEmpty,
-                   let idx = messages.lastIndex(where: { $0.isFromUser }) {
-                    let existing = messages[idx]
-                    messages[idx] = Message(id: existing.id, text: t,
-                                            audioURL: existing.audioURL, isFromUser: true)
+                if let t = transcript, !t.isEmpty {
+                    lastUserTranscript = t
+                    if let idx = messages.lastIndex(where: { $0.isFromUser }) {
+                        let existing = messages[idx]
+                        messages[idx] = Message(id: existing.id, text: t,
+                                                audioURL: existing.audioURL, isFromUser: true)
+                    }
                 }
-                messages.append(Message(text: botText, audioURL: voiceURL, isFromUser: false))
-                if let t = botText {
+                let cleanedBot = botText.map { cleanBotResponse($0) }
+                messages.append(Message(text: cleanedBot, audioURL: voiceURL, isFromUser: false))
+                if let t = cleanedBot {
                     lastResponseText = t
                     suggestions = extractSuggestions(from: t)
                 } else {
@@ -653,6 +701,7 @@ class MainViewModel: ObservableObject {
                 statusText = L("🔊 Antwort...", "🔊 Reply...")
                 isPlaying = true
                 pulseScale = 1.1
+                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
                 try audioService.play(url: voiceURL)
                 while audioService.isPlaying {
                     try? await Task.sleep(for: .milliseconds(200))
@@ -660,15 +709,18 @@ class MainViewModel: ObservableObject {
 
             case .text(let text, let transcript):
                 // Transkript der User-Aufnahme setzen — stabile ID behalten!
-                if let t = transcript, !t.isEmpty,
-                   let idx = messages.lastIndex(where: { $0.isFromUser }) {
-                    let existing = messages[idx]
-                    messages[idx] = Message(id: existing.id, text: t,
-                                            audioURL: existing.audioURL, isFromUser: true)
+                if let t = transcript, !t.isEmpty {
+                    lastUserTranscript = t
+                    if let idx = messages.lastIndex(where: { $0.isFromUser }) {
+                        let existing = messages[idx]
+                        messages[idx] = Message(id: existing.id, text: t,
+                                                audioURL: existing.audioURL, isFromUser: true)
+                    }
                 }
-                lastResponseText = text
-                suggestions = extractSuggestions(from: text)
-                messages.append(Message(text: text, audioURL: nil, isFromUser: false))
+                let cleanedText = cleanBotResponse(text)
+                lastResponseText = cleanedText
+                suggestions = extractSuggestions(from: cleanedText)
+                messages.append(Message(text: cleanedText, audioURL: nil, isFromUser: false))
             }
 
             statusText = L("Halten zum Sprechen", "Hold to speak")
@@ -686,6 +738,17 @@ class MainViewModel: ObservableObject {
     /// Extrahiert bis zu 3 kurze Antwort-Vorschläge aus Bot-Text.
     /// Nur echte nummerierte Listen (1. / 2. / 3.) oder Bullet-Punkte (• / -),
     /// NICHT Markdown-Kursiv (*text*) oder Haiku-Zeilen.
+    /// Strip bot's echo of user transcript (lines starting with > 🎤)
+    private func cleanBotResponse(_ text: String) -> String {
+        let lines = text.components(separatedBy: "\n")
+        let cleaned = lines.filter { line in
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            return !trimmed.hasPrefix("> 🎤")
+        }
+        let result = cleaned.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        return result.isEmpty ? text : result
+    }
+
     private func extractSuggestions(from text: String) -> [String] {
         let lines = text.components(separatedBy: "\n")
             .map { $0.trimmingCharacters(in: .whitespaces) }
@@ -720,7 +783,35 @@ class MainViewModel: ObservableObject {
             Task { await vadService.start() }
         }
     }
+
+    /// Pause VAD/hotword before bot plays audio — prevents bot from hearing itself
+    private func pauseListening() {
+        switch listenMode {
+        case .off: break
+        case .hotword: hotwordService.stopListening()
+        case .vad:     vadService.stop()
+        }
+    }
     
+    // MARK: - Chat Persistence
+
+    private func persistChats() {
+        if let bot = selectedBot {
+            botMessages[bot.id] = messages
+        }
+        ChatHistory.saveAll(botMessages)
+    }
+
+    func clearAllChats() {
+        botMessages = [:]
+        messages = []
+        lastResponseText = nil
+        suggestions = []
+        botLastResponse = [:]
+        botSuggestions = [:]
+        ChatHistory.deleteAll()
+    }
+
     // MARK: - Helpers
     
     private func showError(_ msg: String) {
@@ -732,7 +823,7 @@ class MainViewModel: ObservableObject {
     }
     
     private func updateService() {
-        let username = selectedBot?.username ?? "YOUR_BOT_USERNAME"
+        let username = selectedBot?.username ?? ""
         relayService = RelayService(serverURL: serverURL, botUsername: username)
     }
 
