@@ -581,12 +581,12 @@ tail -f /tmp/tailscaled-error.log
 
 ### 6.1 Projektordner
 
-**Repository:** [https://github.com/<dein-repo>/speak-with-openclaw-ios](https://github.com/<dein-repo>/speak-with-openclaw-ios) (oder lokaler Pfad)
+**Repository:** [https://github.com/<dein-repo>/speak-with-claw-ios](https://github.com/<dein-repo>/speak-with-claw-ios) (oder lokaler Pfad)
 
 ```bash
 # Projekt clonen
 git clone <dein-repo-url>
-cd speak-with-openclaw-ios
+cd speak-with-claw-ios
 ```
 
 ### 6.2 Swift-Dateien Struktur
