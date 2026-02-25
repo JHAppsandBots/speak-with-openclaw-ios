@@ -30,8 +30,8 @@ targets:
         CFBundleDisplayName: "Speak with Claw"
         UILaunchScreen:
           UIColorName: ""
-        NSMicrophoneUsageDescription: "Speak with Claw benötigt das Mikrofon, um deine Sprachnachrichten aufzunehmen und an deinen KI-Bot zu senden."
-        NSSpeechRecognitionUsageDescription: "Speak with Claw nutzt die Spracherkennung, um auf dein eingestelltes Aktivierungswort zu reagieren."
+        NSMicrophoneUsageDescription: "Speak with Claw needs microphone access to record your voice messages and send them to your AI bot."
+        NSSpeechRecognitionUsageDescription: "Speak with Claw uses speech recognition to detect your hotword and activate hands-free mode."
         UIBackgroundModes:
           - audio
           - fetch

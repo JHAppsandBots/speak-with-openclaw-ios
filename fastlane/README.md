@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios release
+
+```sh
+[bundle exec] fastlane ios release
+```
+
+Build + Archive + Upload to App Store Connect (no auto-submit)
+
 ### ios upload_metadata
 
 ```sh
@@ -22,6 +30,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 ```
 
 Upload metadata only to App Store Connect
+
+### ios upload_build
+
+```sh
+[bundle exec] fastlane ios upload_build
+```
+
+Upload IPA binary to App Store Connect (no submit)
 
 ### ios upload_screenshots
 

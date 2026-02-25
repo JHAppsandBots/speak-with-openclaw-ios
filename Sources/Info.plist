@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>de</string>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Speak with Claw</string>
 	<key>CFBundleExecutable</key>
@@ -26,9 +26,9 @@
 		<true/>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Speak with Claw benötigt das Mikrofon, um deine Sprachnachrichten aufzunehmen und an deinen KI-Bot zu senden.</string>
+	<string>Speak with Claw needs microphone access to record your voice messages and send them to your AI bot.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Speak with Claw nutzt die Spracherkennung, um auf dein eingestelltes Aktivierungswort zu reagieren.</string>
+	<string>Speak with Claw uses speech recognition to detect your hotword and activate hands-free mode.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

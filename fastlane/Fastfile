@@ -2,13 +2,53 @@ default_platform(:ios)
 
 platform :ios do
 
-  desc "Upload metadata only to App Store Connect"
-  lane :upload_metadata do
-    api_key = app_store_connect_api_key(
+  def get_api_key
+    app_store_connect_api_key(
       key_id: "MF465S89A3",
       issuer_id: "6b3c7a6c-b1e8-41f7-b879-1f69545dbd36",
       key_filepath: File.expand_path("~/.appstoreconnect/private_keys/AuthKey_MF465S89A3.p8")
     )
+  end
+
+  desc "Build + Archive + Upload to App Store Connect (no auto-submit)"
+  lane :release do
+    api_key = get_api_key
+
+    # 1. xcodegen regenerate project
+    sh("cd .. && xcodegen generate")
+
+    # 2. Build & Archive
+    gym(
+      project: "BotVoice.xcodeproj",
+      scheme: "BotVoice",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "SpeakWithClaw.ipa",
+      clean: true,
+      export_options: {
+        signingStyle: "automatic",
+        teamID: "9YMCY74WN3"
+      }
+    )
+
+    # 3. Upload to App Store Connect
+    deliver(
+      api_key: api_key,
+      ipa: "./build/SpeakWithClaw.ipa",
+      skip_screenshots: true,
+      skip_metadata: false,
+      force: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false,
+      ignore_language_directory_validation: true,
+      app_version: "1.0"
+    )
+  end
+
+  desc "Upload metadata only to App Store Connect"
+  lane :upload_metadata do
+    api_key = get_api_key
 
     deliver(
       api_key: api_key,
@@ -21,13 +61,24 @@ platform :ios do
     )
   end
 
+  desc "Upload IPA binary to App Store Connect (no submit)"
+  lane :upload_build do
+    api_key = get_api_key
+
+    upload_to_app_store(
+      api_key: api_key,
+      ipa: "./build/SpeakWithClaw.ipa",
+      skip_screenshots: true,
+      skip_metadata: true,
+      submit_for_review: false,
+      force: true,
+      run_precheck_before_submit: false
+    )
+  end
+
   desc "Upload screenshots only"
   lane :upload_screenshots do
-    api_key = app_store_connect_api_key(
-      key_id: "MF465S89A3",
-      issuer_id: "6b3c7a6c-b1e8-41f7-b879-1f69545dbd36",
-      key_filepath: File.expand_path("~/.appstoreconnect/private_keys/AuthKey_MF465S89A3.p8")
-    )
+    api_key = get_api_key
 
     deliver(
       api_key: api_key,
