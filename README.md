@@ -1,8 +1,10 @@
 # Speak with Claw 🦞🎤
 
-> A real hands-free conversation with your AI bot — like a phone call, not a form.
+> A hands-free voice interface for your AI bot — no typing, no tapping.
 
-Speak with Claw is an iOS app that acts as a voice interface for Telegram bots running on [OpenClaw](https://openclaw.ai). You talk, the app automatically detects when you're done, your bot responds — audio plays instantly. No typing, no button holding, no hotword required.
+Speak with Claw is an iOS app that acts as a voice interface for Telegram bots running on [OpenClaw](https://openclaw.ai). You talk, the app automatically detects when you're done, and your bot responds with audio. No typing, no button holding, no hotword required.
+
+> ⚠️ **Response latency:** Replies are not instant — expect 3–10 seconds depending on your LLM and network. This is not a Siri replacement. It's a real back-and-forth with your own AI bot, running on your own server.
 
 ---
 
@@ -10,16 +12,16 @@ Speak with Claw is an iOS app that acts as a voice interface for Telegram bots r
 
 ---
 
-## 🎯 The Most Practical Mode: Real Conversation (VAD)
+## 🎯 The Main Mode: Conversation (VAD)
 
 **Conversation mode** is the recommended way to use the app — fully hands-free, no hotword, no button:
 
 1. Activate conversation mode → app calibrates background noise for 2 seconds
 2. Just talk — the app automatically distinguishes your voice from ambient noise
-3. After a short pause: message is sent, bot responds with audio
-4. Bot audio plays → you reply → real back-and-forth dialog
+3. After a short pause: message is sent, bot processes and responds with audio
+4. Audio plays → you reply → back-and-forth dialog
 
-The app reliably separates speech from background noise (music, TV, street sounds). No button, no keyword, no friction.
+The app reliably separates speech from background noise (music, TV, street sounds). No button, no keyword, no friction. Expect a few seconds of latency per response — the bot needs to process your input and generate a reply.
 
 ---
 
@@ -28,7 +30,7 @@ The app reliably separates speech from background noise (music, TV, street sound
 - 🗣️ **Conversation mode (VAD)** — just talk, app detects start and end automatically ← **recommended**
 - 🎤 **Push-to-talk** — hold button for full manual control
 - 👂 **Hotword** — say "Hey Bot" as optional activation
-- 🔊 **Auto-Play** — bot audio response plays immediately
+- 🔊 **Auto-Play** — bot audio response plays automatically when ready
 - 📱 **Background mode** — works with screen locked (VoIP mode)
 - ⚙️ **Adaptive silence detection** — intelligently detects pauses (adjustable 1–5s)
 - 💬 **Conversation history** — all messages as chat
@@ -269,15 +271,18 @@ J.H. — built with OpenClaw
 
 **Speak with Claw — Voice Interface for AI Bots**
 
-Talk to your AI bots on Telegram — hands-free, like a real conversation.
+Talk to your AI bots on Telegram — hands-free, by voice.
 
-Speak with Claw connects your iPhone to your own AI assistant running on your Mac. Just talk — the app automatically detects your voice, sends when you pause, and plays the bot's audio response. Real back-and-forth dialog, no button, no keyword, no friction.
+Speak with Claw connects your iPhone to your own AI bot running on your Mac. Just talk — the app detects your voice automatically, sends when you pause, and plays the bot's audio response.
+
+Note: Responses are not instant. Expect a few seconds of latency per reply, depending on your bot and LLM setup.
 
 **Features:**
 • Conversation mode (VAD) — just talk, fully hands-free
 • Hotword detection ("Hey Bot") — optional activation
 • Automatic silence detection — no button needed
 • Audio responses play after process
+• Audio responses play automatically
 • Background mode with screen locked
 • Multiple bots selectable
 • On-device speech recognition — no cloud upload
