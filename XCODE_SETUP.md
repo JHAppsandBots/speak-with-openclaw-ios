@@ -1,72 +1,79 @@
-# BotVoice — Xcode Setup
+# Speak with Claw — Xcode Setup
 
-## Neues Projekt erstellen
+## Requirements
 
-1. Xcode öffnen → "Create New Project"
-2. iOS → App
-3. Name: `BotVoice`
-4. Team: dein Apple Developer Account
-5. Bundle ID: `de.JHAppsandBots.botvoice`
-6. Interface: SwiftUI
-7. Language: Swift
-8. Speichern in: `_App Entwicklung/BotVoice/`
-
-## Dateien hinzufügen
-
-Diese Dateien aus diesem Ordner in das Xcode-Projekt ziehen:
-- `TelegramService.swift`
-- `AudioService.swift`
-- `MainView.swift`
-- `Models.swift`
-- `SettingsView.swift`
-- `BotSelectView.swift`
-
-## Info.plist Permissions
-
-Im Xcode-Projekt unter "Info" diese Keys hinzufügen:
-
-```
-NSMicrophoneUsageDescription → "BotVoice braucht das Mikrofon um deine Sprachnachrichten aufzunehmen"
-NSLocalNetworkUsageDescription → "Für lokale Bot-Verbindungen"
-```
-
-## Capabilities
-
-Im "Signing & Capabilities" Tab:
-- "Background Modes" hinzufügen → "Audio, AirPlay, and Picture in Picture" aktivieren
-- (Phase 2): "Voice over IP" aktivieren für Hotword im Hintergrund
-
-## App Entry Point
-
-`BotVoiceApp.swift` (wird von Xcode erstellt):
-```swift
-import SwiftUI
-
-@main
-struct BotVoiceApp: App {
-    var body: some Scene {
-        WindowGroup {
-            MainView()
-        }
-    }
-}
-```
-
-## Testen
-
-1. Simulator: funktioniert für UI, aber KEIN echtes Mikrofon
-2. Echtes iPhone: Xcode → Gerät auswählen → Run
-3. Erstes Mal: Auf dem iPhone unter Einstellungen → Datenschutz → Mikrofon → BotVoice erlauben
-
-## Was noch fehlt (TODO)
-
-- [ ] Onboarding-Flow (erster Start → erklärt Setup)
-- [ ] Persistenz: Bots in UserDefaults speichern
-- [ ] Besseres Error-Handling
-- [ ] Loading-Spinner während API-Call
-- [ ] Haptic Feedback
-- [ ] App-Icon
-- [ ] Phase 2: Hotword (CallKit + CoreML)
+- macOS 14+
+- Xcode 15+
+- [xcodegen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen`
 
 ---
-_Stand: 19.02.2026_
+
+## Build the project
+
+```bash
+# Clone the repo
+git clone https://github.com/JHAppsandBots/speak-with-claw-ios.git
+cd speak-with-claw-ios
+
+# Generate the Xcode project
+xcodegen generate
+
+# Open in Xcode
+open BotVoice.xcodeproj
+```
+
+---
+
+## Configure signing
+
+1. Open Xcode → **Signing & Capabilities**
+2. Select your **Development Team**
+3. Set your own **Bundle Identifier** (e.g. `com.yourname.speakwithclaw`)
+
+---
+
+## Permissions (already in Info.plist)
+
+- Microphone — for voice recording
+- Speech Recognition — for hotword detection
+
+---
+
+## Run on device
+
+1. Connect your iPhone via USB
+2. Select it as the target in Xcode
+3. Hit **Run** (⌘R)
+4. On first launch: grant Microphone and Speech Recognition permissions
+
+> ⚠️ The simulator does not have a real microphone. Test on a real device.
+
+---
+
+## File structure
+
+```
+Sources/         ← Source of truth (edit these)
+*.swift          ← Copies used by Xcode build (sync with Sources/)
+project.yml      ← XcodeGen config
+```
+
+After editing files in `Sources/`, copy them to root and regenerate:
+
+```bash
+cp Sources/*.swift .
+xcodegen generate
+```
+
+---
+
+## Troubleshooting
+
+**Build fails after pulling:**
+```bash
+xcodegen generate
+```
+
+**App won't run in background (no VoIP):**
+- Background Modes must include `audio` and `voip` in Info.plist
+- Test on a real device, not simulator
