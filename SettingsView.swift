@@ -243,6 +243,21 @@ struct SettingsView: View {
                 Text(L("Löscht alle Chat-Nachrichten bei allen Bots.", "Deletes all chat messages for all bots."))
             }
 
+        Section {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(L("Rechtlicher Hinweis", "Legal Notice"))
+                    .font(.footnote).fontWeight(.semibold).foregroundColor(.secondary)
+                Text(L(
+                    "Diese App wird kostenlos und ohne Gewährleistung bereitgestellt. Die Daten werden nur lokal auf diesem Gerät gespeichert. Bitte sichere wichtige Inhalte selbst, da Datenverluste durch Updates oder technische Fehler nicht vollständig ausgeschlossen werden können. Nutzung auf eigene Gefahr.",
+                    "This is a private project provided for free. Data is stored locally on this device only. Please secure important content yourself, as data loss due to app updates or technical errors cannot be entirely ruled out. Use at your own risk."
+                ))
+                .font(.footnote).foregroundColor(.secondary)
+            }
+            .padding(.vertical, 4)
+        } header: {
+            Text(L("Info", "Info"))
+        }
+
         }
         .navigationTitle(L("Einstellungen", "Settings"))
         .onDisappear {

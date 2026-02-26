@@ -290,3 +290,15 @@ Note: Responses are not instant. Expect a few seconds of latency per reply, depe
 **Requirement:** OpenClaw on your Mac (free, open source, setup guide on GitHub)
 
 *Privacy: No data is sent to the developer. Everything runs on your own infrastructure.*
+
+---
+
+## ⚖️ Legal Disclaimer
+
+This app is provided **"as is"** and **"as available"** for free. Use at your own risk.
+
+- **Limitation of Liability:** The developer shall not be liable for any indirect, incidental, or consequential damages, including loss of data, chat history, or service interruptions, unless caused by willful misconduct or gross negligence.
+- **Data Responsibility:** The user is solely responsible for backing up important information. This app does not provide automated cloud backups. The developer does not guarantee the permanent availability of stored data.
+- **No Warranty:** The developer makes no warranties, express or implied, regarding the accuracy, reliability, or continuous availability of the app's features.
+
+> **Notice:** Data is stored locally on this device only. Please secure important content yourself, as data loss due to app updates or technical errors cannot be entirely ruled out.

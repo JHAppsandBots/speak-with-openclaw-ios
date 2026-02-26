@@ -1,18 +1,32 @@
-Speak with Claw turns your iPhone into a voice interface for your AI bots running on your own Mac — fully hands-free, no button holding, no hotword required.
+Speak with Claw turns your iPhone into a voice interface for your AI bot. Just talk. No button, no hotword. The app detects when you stop speaking, sends your voice to your own server, and plays the response back.
 
-Just talk. The app automatically detects when you start and stop speaking, sends your voice to your relay server, and your bot responds with audio. Real back-and-forth conversation, like a phone call.
+Note: Responses are not instant — expect a few seconds per reply depending on your LLM and server setup.
 
 Features:
-• Hands-free VAD mode — automatic speech detection
-• Multi-bot support — switch between different bots
-• Chat history per bot
-• 100% private — connects only to your own server, no cloud, no tracking
+- Hands-free conversation mode (VAD)
+- Optional hotword activation
+- Push-to-talk
+- Audio responses play automatically
+- Chat history per bot
+- Multiple bots selectable
+- Background mode
+- On-device speech recognition, no cloud upload
+
+Privacy:
+This app sends your voice only to a server you configure and operate yourself. No data is sent to the developer or any third party. No analytics, no tracking, no backend.
 
 Requirements:
-• iPhone with iOS 17+
-• Mac running OpenClaw with voice relay server
-• Local network or Tailscale connection
+- iPhone iOS 17+
+- Mac running OpenClaw with voice relay server
+- Local network or Tailscale
 
-This app is free and open source (MIT). 
+Setup: https://github.com/JHAppsandBots/speak-with-claw-ios
 
-Note: This is an early-stage release. Core features work well, but some functions are still rough around the edges or not yet fully implemented. Feedback and contributions welcome on GitHub.
+Open source, MIT licensed.
+
+---
+
+Legal Disclaimer
+This app is provided "as is" and "as available" for free. Use at your own risk. The developer shall not be liable for any indirect, incidental, or consequential damages, including loss of data, chat history, or service interruptions, unless caused by willful misconduct or gross negligence. The user is solely responsible for backing up important information. The developer makes no warranties regarding accuracy, reliability, or continuous availability.
+
+Notice: Data is stored locally on this device only. Please secure important content yourself, as data loss due to app updates or technical errors cannot be entirely ruled out.
