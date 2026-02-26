@@ -28,7 +28,14 @@ class VADService: NSObject, ObservableObject {
 
     // MARK: - Config
     var silenceThreshold: Double = 2.0   // Sekunden Stille bis Senden
-    var language: String = "de-DE"
+    var language: String = "de-DE" {
+        didSet {
+            if oldValue != language {
+                speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language))
+                print("VADService: SpeechRecognizer neu erstellt für Sprache \(language)")
+            }
+        }
+    }
     var pauseHotword  = "aufnahme pause"
     var resumeHotword = "aufnahme weiter"
 
@@ -392,8 +399,13 @@ class VADService: NSObject, ObservableObject {
             }
         }
 
-        // Direkt weiter überwachen
-        startMonitoring()
+        // Kurze Pause damit AudioSession + Engine sich erholen können, dann weiter überwachen
+        monitorTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.isActive else { return }
+                self.startMonitoring()
+            }
+        }
     }
 
     // MARK: - Voice Validator (SFSpeechRecognizer)
