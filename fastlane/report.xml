@@ -5,27 +5,7 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.001963">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="1: app_store_connect_api_key" time="0.01068">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="2: cd .. &amp;&amp; xcodegen generate" time="0.111509">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="3: gym" time="44.646319">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="4: deliver" time="39.576015">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000514">
         
       </testcase>
     

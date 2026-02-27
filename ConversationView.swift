@@ -167,7 +167,7 @@ struct MessageBubble: View {
         ConversationView(
             messages: [
                 // Nur Text
-                Message(text: "Hey Friedrich!", isFromUser: true),
+                Message(text: "Hey Bot!", isFromUser: true),
                 // Nur Audio (z.B. Aufnahme ohne Transkript)
                 Message(text: nil, audioURL: URL(string: "file:///tmp/test.m4a"), isFromUser: true),
                 // Text + Audio (Aufnahme mit Transkript)

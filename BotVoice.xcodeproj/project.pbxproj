@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0467CED936405DFC041A2EDE /* BackgroundKeepAlive.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44095A759F13FAE98DA2FC7 /* BackgroundKeepAlive.swift */; };
 		09401CD664E5B62C32D785F5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54134169EEC75B734774E774 /* SettingsView.swift */; };
+		0ABD0A0012E332E6F74CADDA /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA95696E053FD679F1605373 /* AudioSessionManager.swift */; };
 		33D46DF109B51CA95A3A09A4 /* BotSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973CC8690FA67412B9B1F86B /* BotSelectView.swift */; };
 		48FDCB7136A69B89DBF67743 /* SilenceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC4AD353999F7DA7D35F15 /* SilenceDetector.swift */; };
 		4F193205EE27B3EEDB202A80 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6012C44B191435B6F2480F /* Models.swift */; };
@@ -42,6 +44,8 @@
 		A2C344588B5C26B3B5D9AF54 /* BotVoiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotVoiceApp.swift; sourceTree = "<group>"; };
 		AF44A1ADB46120DC2D13D7FC /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		C8789DF797ADD13DC99D1118 /* VoIPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoIPService.swift; sourceTree = "<group>"; };
+		CA95696E053FD679F1605373 /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionManager.swift; sourceTree = "<group>"; };
+		D44095A759F13FAE98DA2FC7 /* BackgroundKeepAlive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundKeepAlive.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -66,6 +70,8 @@
 			children = (
 				9AD8D3956989862DB918ED2C /* Assets.xcassets */,
 				886375A4C13707D88DD205B5 /* AudioService.swift */,
+				CA95696E053FD679F1605373 /* AudioSessionManager.swift */,
+				D44095A759F13FAE98DA2FC7 /* BackgroundKeepAlive.swift */,
 				973CC8690FA67412B9B1F86B /* BotSelectView.swift */,
 				A2C344588B5C26B3B5D9AF54 /* BotVoiceApp.swift */,
 				0CB43F2E8B9FB31A29BD5179 /* ConversationView.swift */,
@@ -156,6 +162,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A842FB24FF580F93D2E734FA /* AudioService.swift in Sources */,
+				0ABD0A0012E332E6F74CADDA /* AudioSessionManager.swift in Sources */,
+				0467CED936405DFC041A2EDE /* BackgroundKeepAlive.swift in Sources */,
 				33D46DF109B51CA95A3A09A4 /* BotSelectView.swift in Sources */,
 				70C22B30C9FFEF95B700690C /* BotVoiceApp.swift in Sources */,
 				8777D6BAD8304A7E1A486CF8 /* ConversationView.swift in Sources */,
@@ -244,7 +252,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.speakwithopenclaw;
+				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.heyopenclaw;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -262,7 +270,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.speakwithopenclaw;
+				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.heyopenclaw;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

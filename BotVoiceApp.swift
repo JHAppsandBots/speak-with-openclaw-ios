@@ -9,7 +9,12 @@ struct SpeakWithOpenClawApp: App {
     @AppStorage("onboardingDone") private var onboardingDone = false
     
     init() {
-        VoIPService.configureBackgroundAudio()
+        // EINMALIGE Audio-Session-Konfiguration — kein Service darf danach setCategory aufrufen.
+        // Das löst das Route-Wechsel-Problem (Kopfhörer → Lautsprecher).
+        Task { @MainActor in
+            AudioSessionManager.shared.configure()
+            BackgroundKeepAlive.shared.start()
+        }
     }
     
     var body: some Scene {

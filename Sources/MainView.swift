@@ -451,6 +451,20 @@ class MainViewModel: ObservableObject {
         vadCancellable = vadService.objectWillChange.sink { [weak self] (_: Void) in
             self?.objectWillChange.send()
         }
+
+        // Watchdog: prüft alle 8s ob VAD noch läuft — startet neu wenn nicht
+        BackgroundKeepAlive.shared.onWatchdogFired = { [weak self] in
+            guard let self else { return }
+            guard self.listenMode == .vad else { return }
+            guard !self.isRecording, !self.isPlaying else { return }  // nicht während Aufnahme/Playback
+            if !self.vadService.isActive {
+                print("Watchdog: VAD nicht aktiv — starte neu")
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    await self.vadService.start()
+                }
+            }
+        }
     }
     
     // MARK: - Setup
@@ -569,9 +583,12 @@ class MainViewModel: ObservableObject {
     func startRecording(fromHotword: Bool = false) {
         guard !isRecording, !isPlaying else { return }
 
-        // Laufende Auto-Modi pausieren
+        // Laufende Auto-Modi pausieren (suspend statt stop — Engine bleibt aktiv)
         hotwordService.stopListening()
-        vadService.stop()
+        vadService.suspend()
+
+        // Background-Task starten — iOS darf uns nicht suspendieren während Aufnahme
+        BackgroundKeepAlive.shared.beginBackgroundTask()
 
         do {
             _ = try audioService.startRecording()
@@ -633,9 +650,9 @@ class MainViewModel: ObservableObject {
                     suggestions = extractSuggestions(from: t)
                 }
                 statusText = L("🔊 Antwort...", "🔊 Reply...")
+                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
                 isPlaying = true
                 pulseScale = 1.1
-                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
                 try audioService.play(url: voiceURL)
                 while audioService.isPlaying {
                     try? await Task.sleep(for: .milliseconds(200))
@@ -657,6 +674,7 @@ class MainViewModel: ObservableObject {
         
         isPlaying = false
         pulseScale = 1.0
+        BackgroundKeepAlive.shared.endBackgroundTask()
         restoreHotword()
     }
     
@@ -699,9 +717,9 @@ class MainViewModel: ObservableObject {
                     suggestions = []
                 }
                 statusText = L("🔊 Antwort...", "🔊 Reply...")
+                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
                 isPlaying = true
                 pulseScale = 1.1
-                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
                 try audioService.play(url: voiceURL)
                 while audioService.isPlaying {
                     try? await Task.sleep(for: .milliseconds(200))
@@ -732,6 +750,8 @@ class MainViewModel: ObservableObject {
 
         isPlaying = false
         pulseScale = 1.0
+        // Background-Task beenden — wir sind wieder bereit, kein kritischer Vorgang läuft
+        BackgroundKeepAlive.shared.endBackgroundTask()
         restoreHotword()
     }
     
@@ -774,22 +794,26 @@ class MainViewModel: ObservableObject {
         return found
     }
 
+    /// Pause VAD/hotword before bot plays audio — prevents bot from hearing itself.
+    /// VAD: suspend() statt stop() — Engine läuft weiter, nur Buffers werden ignoriert.
+    /// Das hält die App im Hintergrund aktiv und die Audio-Route stabil.
+    private func pauseListening() {
+        switch listenMode {
+        case .off: break
+        case .hotword: hotwordService.stopListening()
+        case .vad:     vadService.suspend()
+        }
+    }
+
     private func restoreHotword() {
         switch listenMode {
         case .off: break
         case .hotword:
             hotwordService.resumeAfterRecording()
         case .vad:
-            Task { await vadService.start() }
-        }
-    }
-
-    /// Pause VAD/hotword before bot plays audio — prevents bot from hearing itself
-    private func pauseListening() {
-        switch listenMode {
-        case .off: break
-        case .hotword: hotwordService.stopListening()
-        case .vad:     vadService.stop()
+            // resume() statt start() — Engine läuft bereits, wir schalten nur die
+            // Buffer-Verarbeitung wieder ein. Kein Warten nötig.
+            vadService.resume()
         }
     }
     

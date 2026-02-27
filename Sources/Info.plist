@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Speak with Claw</string>
+	<string>Speak with OpenClaw</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,13 +26,13 @@
 		<true/>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Speak with Claw needs microphone access to record your voice messages and send them to your AI bot.</string>
+	<string>BotVoice braucht das Mikrofon um deine Sprachnachrichten aufzunehmen und an deinen Telegram-Bot zu schicken.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Speak with Claw uses speech recognition to detect your hotword and activate hands-free mode.</string>
+	<string>BotVoice nutzt Spracherkennung um auf dein Hotword zu reagieren.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
-		<string>fetch</string>
+		<string>voip</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>

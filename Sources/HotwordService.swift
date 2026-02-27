@@ -322,21 +322,8 @@ class HotwordService: NSObject, ObservableObject {
     }
     
     private func startEngine() throws {
-        let session = AVAudioSession.sharedInstance()
-        // .allowBluetoothHFP  → HFP-Profil: Bluetooth-Headset-Mikrofon aktiv
-        // .allowBluetoothA2DP → A2DP-Profil: Bluetooth-Audio-Ausgabe (hohe Qualität)
-        // Wenn Headset mit Mikrofon verbunden: iOS wechselt automatisch auf HFP
-        try session.setCategory(.playAndRecord, mode: .default,
-                                options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP, .mixWithOthers])
-        try session.setActive(true, options: .notifyOthersOnDeactivation)
-        // Lautsprecher explizit erzwingen wenn kein externes Gerät verbunden
-        let hasExternalOutput = session.currentRoute.outputs.contains {
-            $0.portType == .bluetoothHFP || $0.portType == .bluetoothA2DP ||
-            $0.portType == .headphones || $0.portType == .airPlay
-        }
-        if !hasExternalOutput {
-            try? session.overrideOutputAudioPort(.speaker)
-        }
+        // Session wird NICHT hier konfiguriert — AudioSessionManager.shared ist Single Source of Truth.
+        AudioSessionManager.shared.ensureActive()
         
         if tapInstalled {
             audioEngine.inputNode.removeTap(onBus: 0)

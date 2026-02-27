@@ -55,10 +55,15 @@ class VoIPService: NSObject, ObservableObject, PKPushRegistryDelegate {
     static func configureBackgroundAudio() {
         do {
             let session = AVAudioSession.sharedInstance()
+            // mode: .default (nicht .voiceChat) — voiceChat würde Bluetooth-Routing stören
+            // .allowBluetoothHFP: Bluetooth-Headset-Mikrofon (AirPods etc.)
+            // .allowBluetoothA2DP: Bluetooth-Audio-Ausgabe
+            // : Lautsprecher-Fallback wenn kein externes Gerät
+            // .mixWithOthers: andere Audio-Apps werden nicht unterbrochen
             try session.setCategory(
                 .playAndRecord,
-                mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetoothA2DP, .mixWithOthers]
+                mode: .default,
+                options: [.allowBluetoothHFP, .allowBluetoothA2DP, .mixWithOthers]
             )
             try session.setActive(true)
         } catch {

@@ -19,7 +19,7 @@ targets:
       - path: Sources
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.johanneshahn.speakwithopenclaw
+        PRODUCT_BUNDLE_IDENTIFIER: de.johanneshahn.heyopenclaw
         INFOPLIST_FILE: Sources/Info.plist
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -27,14 +27,14 @@ targets:
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: "Speak with Claw"
+        CFBundleDisplayName: "Speak with OpenClaw"
         UILaunchScreen:
           UIColorName: ""
-        NSMicrophoneUsageDescription: "Speak with Claw needs microphone access to record your voice messages and send them to your AI bot."
-        NSSpeechRecognitionUsageDescription: "Speak with Claw uses speech recognition to detect your hotword and activate hands-free mode."
+        NSMicrophoneUsageDescription: "BotVoice braucht das Mikrofon um deine Sprachnachrichten aufzunehmen und an deinen Telegram-Bot zu schicken."
+        NSSpeechRecognitionUsageDescription: "BotVoice nutzt Spracherkennung um auf dein Hotword zu reagieren."
         UIBackgroundModes:
           - audio
-          - fetch
+          - voip
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         NSAppTransportSecurity:

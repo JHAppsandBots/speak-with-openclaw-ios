@@ -26,21 +26,8 @@ class AudioService: NSObject, ObservableObject {
     // MARK: - Recording
     
     func startRecording() throws -> URL {
-        // Session sicherstellen — identisch zu HotwordService damit Bluetooth-Route erhalten bleibt
-        // .allowBluetoothHFP  → HFP: Bluetooth-Headset-Mikrofon
-        // .allowBluetoothA2DP → A2DP: Bluetooth-Audio-Ausgabe
-        // mode: .voiceChat → optimiert für Sprache, aktiviert Bluetooth automatisch
-        let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default,
-                                options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP, .mixWithOthers])
-        try session.setActive(true)
-        let hasExternalOutput = session.currentRoute.outputs.contains {
-            $0.portType == .bluetoothHFP || $0.portType == .bluetoothA2DP ||
-            $0.portType == .headphones || $0.portType == .airPlay
-        }
-        if !hasExternalOutput {
-            try? session.overrideOutputAudioPort(.speaker)
-        }
+        // Session wird NICHT hier konfiguriert — AudioSessionManager.shared ist Single Source of Truth.
+        AudioSessionManager.shared.ensureActive()
         
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("botvoice_\(Date().timeIntervalSince1970).m4a")
@@ -53,7 +40,7 @@ class AudioService: NSObject, ObservableObject {
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
         // Debug: Aktive Input-Route loggen → in Xcode Console sichtbar
-        let route = session.currentRoute
+        let route = AVAudioSession.sharedInstance().currentRoute
         let inputs = route.inputs.map { "\($0.portName) [\($0.portType.rawValue)]" }.joined(separator: ", ")
         print("🎙️ AudioService: Aufnahme startet — Input: \(inputs.isEmpty ? "keiner?" : inputs)")
 
@@ -73,14 +60,8 @@ class AudioService: NSObject, ObservableObject {
     // MARK: - Playback
     
     func play(url: URL) throws {
-        let session = AVAudioSession.sharedInstance()
-        try? session.setActive(true)
-        // Lautsprecher sicherstellen wenn kein externes Gerät
-        let hasExternal = session.currentRoute.outputs.contains {
-            $0.portType == .bluetoothHFP || $0.portType == .bluetoothA2DP ||
-            $0.portType == .headphones || $0.portType == .airPlay
-        }
-        if !hasExternal { try? session.overrideOutputAudioPort(.speaker) }
+        // Session aktiv halten — keine Neukonfiguration, Route bleibt stabil.
+        AudioSessionManager.shared.ensureActive()
         let player = try AVAudioPlayer(contentsOf: url)
         player.delegate = self
         // prepareToPlay() weckt die Hardware auf, ohne Ton zu erzeugen.
