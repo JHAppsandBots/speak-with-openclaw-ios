@@ -173,3 +173,55 @@ enum RelayError: Error, LocalizedError {
         }
     }
 }
+
+// MARK: - Admin Actions
+
+extension RelayService {
+    /// Restart all bots on the Mac
+    func restartBots() async -> (ok: Bool, message: String) {
+        guard let url = URL(string: "\(serverURL)/restart-bots") else {
+            return (false, "Bad URL")
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 70
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse else { return (false, "Invalid response") }
+            if let json = try? JSONDecoder().decode(AdminResponse.self, from: data) {
+                return (json.ok, json.ok ? "Bots restarted" : (json.error ?? "Unknown error"))
+            }
+            return (http.statusCode == 200, "HTTP \(http.statusCode)")
+        } catch {
+            return (false, error.localizedDescription)
+        }
+    }
+    
+    /// Restart the voice relay server
+    func restartRelay() async -> (ok: Bool, message: String) {
+        guard let url = URL(string: "\(serverURL)/restart-relay") else {
+            return (false, "Bad URL")
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 20
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse else { return (false, "Invalid response") }
+            if let json = try? JSONDecoder().decode(AdminResponse.self, from: data) {
+                return (json.ok, json.ok ? "Relay restarting..." : (json.error ?? "Unknown error"))
+            }
+            return (http.statusCode == 200, "HTTP \(http.statusCode)")
+        } catch {
+            return (false, error.localizedDescription)
+        }
+    }
+}
+
+struct AdminResponse: Decodable {
+    let ok: Bool
+    let output: String?
+    let error: String?
+}

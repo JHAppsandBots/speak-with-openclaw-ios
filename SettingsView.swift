@@ -53,6 +53,9 @@ struct SettingsView: View {
     @State private var testResult: String?
     @State private var isTesting = false
     @State private var showDeleteConfirmation = false
+    @State private var isRestartingBots = false
+    @State private var isRestartingRelay = false
+    @State private var adminResult: String?
 
     var onSave: (() -> Void)?
     var onClearChats: (() -> Void)?
@@ -217,6 +220,47 @@ struct SettingsView: View {
                 Text(L("Antippen = anhören & auswählen.", "Tap = preview & select."))
             }
 
+
+            // MARK: - Admin Actions
+            Section(L("Server-Verwaltung", "Server Admin")) {
+                Button {
+                    Task { await restartBots() }
+                } label: {
+                    HStack {
+                        if isRestartingBots {
+                            ProgressView().scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.clockwise.circle")
+                        }
+                        Text(L("Bots neu starten", "Restart Bots"))
+                    }
+                }
+                .disabled(isRestartingBots || isRestartingRelay)
+
+                Button {
+                    Task { await restartRelay() }
+                } label: {
+                    HStack {
+                        if isRestartingRelay {
+                            ProgressView().scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "antenna.radiowaves.left.and.right")
+                        }
+                        Text(L("Voice-Relay neu starten", "Restart Voice Relay"))
+                    }
+                }
+                .disabled(isRestartingBots || isRestartingRelay)
+
+                if let result = adminResult {
+                    Text(result)
+                        .font(.caption)
+                        .foregroundStyle(result.hasPrefix("✅") ? .green : .red)
+                }
+            } footer: {
+                Text(L("Startet die Telegram-Bots bzw. den Voice-Server auf dem Mac neu.",
+                       "Restarts the Telegram bots or voice server on your Mac."))
+            }
+
             // MARK: - Chatverläufe löschen
             Section {
                 Button(role: .destructive) {
@@ -263,6 +307,25 @@ struct SettingsView: View {
         .onDisappear {
             onSave?()
         }
+    }
+
+
+    private func restartBots() async {
+        isRestartingBots = true
+        adminResult = nil
+        let service = RelayService(serverURL: serverURL, botUsername: "")
+        let (ok, msg) = await service.restartBots()
+        adminResult = ok ? L("✅ Bots neu gestartet", "✅ Bots restarted") : "❌ \(msg)"
+        isRestartingBots = false
+    }
+
+    private func restartRelay() async {
+        isRestartingRelay = true
+        adminResult = nil
+        let service = RelayService(serverURL: serverURL, botUsername: "")
+        let (ok, msg) = await service.restartRelay()
+        adminResult = ok ? L("✅ Relay wird neu gestartet", "✅ Relay restarting") : "❌ \(msg)"
+        isRestartingRelay = false
     }
 
     private func testConnection() async {
