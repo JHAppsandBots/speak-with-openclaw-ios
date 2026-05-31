@@ -1,8 +1,12 @@
 # Speak with Claw — Reproduce From Zero (app + backend)
 
-**Updated: 2026-05-31 · v1.0.2.** Build the *entire* system from scratch: the iOS app **and** the Mac
+**Updated: 2026-05-31 · v1.1.0.** Build the *entire* system from scratch: the iOS app **and** the Mac
 backend (voice relay + OpenClaw bots), including the pitfalls worth avoiding. New here? Start with
 **[00_AI_ENTRY.md](00_AI_ENTRY.md)**.
+
+> Since v1.1.0: relay TTS uses **MP3** (reliable iOS playback); the app has playback controls + chat
+> export; recognition/app language default to German; optional, fully isolated **"Terminal" target**
+> (local file mailbox, **no Claude API**, default off). See `CHANGELOG.md`.
 
 > This is the public repo — all hosts/bots below are **placeholders**. Use your own values.
 

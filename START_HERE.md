@@ -1,7 +1,9 @@
 # START HERE — Speak with Claw 🦞🎤
 
-**Letztes Update:** 31.05.2026 · v1.0.2
-**Status:** 🟢 v1.0.2 bereit (VAD-/Haptik-/Relay-Optimierungen) — Review + Push offen
+**Letztes Update:** 31.05.2026 · v1.1.0
+**Status:** 🟢 v1.1.0 — zuverlässiger Dauerbetrieb, Audio-Steuerung, Export, MP3-TTS
+**Neu in v1.1.0:** Pause/Stop der Antwort · Chat-Export (MD/TXT) · kopierbare Blasen · Hinweis-Ton ·
+Deutsch-Default · Foreground-/Kopfhörer-Stabilität · optionaler Terminal-Modus (lokal, ohne Claude-API). Details: `CHANGELOG.md`.
 **Projekt-Typ:** Native iOS-App (SwiftUI)
 **🧭 Du bist eine LLM?** → lies zuerst **[docs/00_AI_ENTRY.md](docs/00_AI_ENTRY.md)** (Einstieg/Hub)
 

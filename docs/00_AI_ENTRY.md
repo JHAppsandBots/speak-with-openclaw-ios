@@ -2,7 +2,9 @@
 
 > **Are you an LLM about to work on "Speak with Claw"? Read THIS file first.**
 > It introduces you in ~5 minutes and points, in order, to every other source and file.
-> Status: **2026-05-31 · v1.0.2**. This is the **public** repo (no credentials, no real IPs).
+> Status: **2026-05-31 · v1.1.0**. This is the **public** repo (no credentials, no real IPs).
+> New in v1.1.0: playback controls, chat export (MD/TXT), copyable bubbles, cue tone, German default,
+> foreground/headphone reliability, MP3 TTS, optional local "Terminal" target (no Claude API). See `CHANGELOG.md`.
 
 ---
 
