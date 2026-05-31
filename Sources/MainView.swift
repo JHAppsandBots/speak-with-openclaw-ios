@@ -8,7 +8,11 @@ struct MainView: View {
     @StateObject private var viewModel: MainViewModel
     @State private var showConversation = false
     @State private var showSettings = false
-    
+    @AppStorage("heavyMode") private var heavyMode = false   // Schieber: aus = Normal (gegated), an = Schwer (max. Gehirn-Kraft)
+    @AppStorage("chatTarget") private var chatTarget = "openclaw"   // "openclaw" | "claude" (Terminal-Bridge)
+    @AppStorage("claudeNeutral") private var claudeNeutral = false // im Claude-Modus: ohne Persona
+    @Environment(\.scenePhase) private var scenePhase
+
     init(voipService: VoIPService, hotwordService: HotwordService) {
         _viewModel = StateObject(wrappedValue: MainViewModel(
             voipService: voipService,
@@ -16,12 +20,41 @@ struct MainView: View {
         ))
     }
     
+    /// Build-Zeitpunkt + Version der INSTALLIERTEN App (Executable-Datum + Info.plist).
+    /// Damit ist auf dem ersten Screen sofort sichtbar, von wann die laufende Version ist.
+    private var buildStamp: String {
+        let info = Bundle.main.infoDictionary
+        let v = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let b = info?["CFBundleVersion"] as? String ?? "?"
+        var when = ""
+        if let url = Bundle.main.executableURL,
+           let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+           let d = attrs[.modificationDate] as? Date {
+            let f = DateFormatter()
+            f.locale = Locale(identifier: "de_DE")
+            f.dateFormat = "dd.MM.yyyy, HH:mm"
+            when = f.string(from: d)
+        }
+        return "Build \(when) · v\(v) (\(b))"
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
-                
+                // Dezenter dunkler Verlauf statt flachem Schwarz — wirkt hochwertiger.
+                LinearGradient(
+                    colors: [Color(red: 0.05, green: 0.05, blue: 0.09), .black],
+                    startPoint: .top, endPoint: .bottom
+                )
+                .ignoresSafeArea()
+
                 VStack(spacing: 0) {
+
+                    // Build-Stempel: zeigt, von wann die installierte Version ist
+                    Text(buildStamp)
+                        .font(.caption2)
+                        .foregroundStyle(.gray.opacity(0.85))
+                        .padding(.top, 2)
 
                     // MARK: — Top: Bot-Name + Status (kompakt)
                     VStack(spacing: 4) {
@@ -62,6 +95,62 @@ struct MainView: View {
                     }
                     .padding(.top, 8)
                     .padding(.bottom, 12)
+
+                    // MARK: — Ziel-Auswahl: OpenClaw ⇄ Claude-Terminal (isoliert/additiv)
+                    Picker("", selection: $chatTarget) {
+                        Text(L("🦞 OpenClaw", "🦞 OpenClaw")).tag("openclaw")
+                        Text(L("💻 Terminal", "💻 Terminal")).tag("claude")
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 28)
+                    .padding(.bottom, 8)
+                    .onChange(of: chatTarget) { _, _ in viewModel.refreshRelayTarget() }
+
+                    if chatTarget == "openclaw" {
+                        // Schieber: Normal (gegated) ⇄ Schwer (max. Gehirn-Kraft)
+                        HStack(spacing: 10) {
+                            Image(systemName: "brain.head.profile")
+                                .font(.callout)
+                                .foregroundStyle(heavyMode ? .orange : .gray)
+                            Text(heavyMode
+                                 ? L("Schwer · max. Gehirn-Kraft", "Heavy · max brain power")
+                                 : L("Normal · adaptiv & schnell", "Normal · adaptive & fast"))
+                                .font(.caption)
+                                .foregroundStyle(heavyMode ? .orange : .gray)
+                                .animation(.easeInOut(duration: 0.2), value: heavyMode)
+                            Spacer(minLength: 4)
+                            Toggle("", isOn: $heavyMode)
+                                .labelsHidden()
+                                .tint(.orange)        // an = orange Spur · aus = silber/grau
+                        }
+                        .padding(.horizontal, 28)
+                        .padding(.bottom, 12)
+                    } else {
+                        // Claude-Terminal-Modus: als gewählte Persona ODER neutral
+                        HStack(spacing: 10) {
+                            Image(systemName: claudeNeutral ? "terminal" : "theatermasks")
+                                .font(.callout)
+                                .foregroundStyle(.green)
+                            Text(claudeNeutral
+                                 ? L("Neutral · direkt mit dem Terminal", "Neutral · plain terminal")
+                                 : L("Als Persona: \(viewModel.selectedBot?.name ?? "—")",
+                                     "As persona: \(viewModel.selectedBot?.name ?? "—")"))
+                                .font(.caption)
+                                .foregroundStyle(.green)
+                            Spacer(minLength: 4)
+                            Toggle("", isOn: $claudeNeutral)
+                                .labelsHidden()
+                                .tint(.green)
+                        }
+                        .padding(.horizontal, 28)
+                        .padding(.bottom, 4)
+                        .onChange(of: claudeNeutral) { _, _ in viewModel.refreshRelayTarget() }
+                        Text(L("Spricht mit deiner laufenden Claude-Code-Terminal-Session.",
+                               "Talks to your running Claude Code terminal session."))
+                            .font(.caption2)
+                            .foregroundStyle(.green.opacity(0.6))
+                            .padding(.bottom, 10)
+                    }
 
                     // MARK: — Mitte: Button + Status-Text (kompakt, feste Höhe)
                     VStack(spacing: 8) {
@@ -125,8 +214,33 @@ struct MainView: View {
                                     }
                                 }
                         )
+
+                        // Wiedergabe-Steuerung — nur sichtbar während die Bot-Audio-Antwort läuft
+                        if viewModel.isPlaying {
+                            HStack(spacing: 14) {
+                                Button {
+                                    viewModel.togglePlayPause()
+                                } label: {
+                                    Label(viewModel.isPaused ? L("Weiter", "Resume") : L("Pause", "Pause"),
+                                          systemImage: viewModel.isPaused ? "play.fill" : "pause.fill")
+                                        .padding(.horizontal, 16).padding(.vertical, 9)
+                                        .background(Color(white: 0.2)).clipShape(.capsule)
+                                }
+                                Button {
+                                    viewModel.stopPlayback()
+                                } label: {
+                                    Label(L("Stopp", "Stop"), systemImage: "stop.fill")
+                                        .padding(.horizontal, 16).padding(.vertical, 9)
+                                        .background(Color.red.opacity(0.8)).clipShape(.capsule)
+                                }
+                            }
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                            .padding(.top, 2)
+                            .transition(.opacity.combined(with: .scale))
+                        }
                     }
-                    
+
                     // MARK: — Unten: Transkript + Antwort + Vorschläge
                     if viewModel.lastUserTranscript != nil || viewModel.lastResponseText != nil {
                         ScrollView {
@@ -272,6 +386,24 @@ struct MainView: View {
                     viewModel.sendTextToBot(text: text)
                 }
                 .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        if !viewModel.messages.isEmpty {
+                            Menu {
+                                ShareLink(item: viewModel.chatMarkdownFile(),
+                                          preview: SharePreview(L("Chat-Verlauf", "Chat history"),
+                                                                image: Image(systemName: "doc.text"))) {
+                                    Label(L("Als Markdown (.md)", "As Markdown (.md)"), systemImage: "doc.richtext")
+                                }
+                                ShareLink(item: viewModel.chatTextFile(),
+                                          preview: SharePreview(L("Chat-Verlauf", "Chat history"),
+                                                                image: Image(systemName: "doc.text"))) {
+                                    Label(L("Als Text (.txt)", "As text (.txt)"), systemImage: "doc.plaintext")
+                                }
+                            } label: {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(L("Fertig", "Done")) { showConversation = false }
                     }
@@ -279,9 +411,14 @@ struct MainView: View {
             }
         }
         .task { await viewModel.setup() }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active { Task { await viewModel.onForeground() } }
+        }
         .animation(.easeInOut(duration: 0.3), value: viewModel.lastResponseText)
         .animation(.easeInOut(duration: 0.2), value: viewModel.errorMessage)
         .animation(.easeInOut(duration: 0.15), value: viewModel.showHotwordFlash)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.isPlaying)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.isPaused)
     }
     
     /// True when confirmed speech is being recorded
@@ -329,6 +466,7 @@ class MainViewModel: ObservableObject {
     // MARK: - Published
     @Published var isRecording = false
     @Published var isPlaying = false
+    @Published var isPaused = false                 // Bot-Audio pausiert (Steuerung Pause/Weiter/Stop)
     @Published var statusText = L("Halten zum Sprechen", "Hold to speak")
     @Published var lastResponseText: String?
     @Published var lastUserTranscript: String?
@@ -340,26 +478,31 @@ class MainViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var selectedBot: Bot? {
         didSet {
-            // Alten Bot-Stand sichern
-            if let old = oldValue {
+            // Bot-Wechsel: Property-Observer-Kaskade unterdrücken, damit der frisch geladene
+            // Verlauf des neuen Bots nicht durch messages.didSet sofort wieder überschrieben wird.
+            guard oldValue?.id != selectedBot?.id else { return }
+            isSwitchingBot = true
+            if let old = oldValue {                       // alten Stand sichern
                 botMessages[old.id] = messages
                 if let r = lastResponseText { botLastResponse[old.id] = r }
                 botSuggestions[old.id] = suggestions
             }
-            // Neuen Bot-Stand laden
-            if let new = selectedBot {
+            if let new = selectedBot {                    // neuen Stand laden
                 messages = botMessages[new.id] ?? []
                 lastResponseText = botLastResponse[new.id]
                 suggestions = botSuggestions[new.id] ?? []
             }
+            isSwitchingBot = false
+            persistChats()
             saveBot()
             updateService()
         }
     }
+    private var isSwitchingBot = false
     @Published var pulseScale: CGFloat = 1.0
     @Published var isConnected = false
     @Published var messages: [Message] = [] {
-        didSet { persistChats() }
+        didSet { if !isSwitchingBot { persistChats() } }
     }
     // Drei Hör-Modi: aus / Hotword / VAD (Gesprächsmodus)
     enum ListenMode: String { case off, hotword, vad }
@@ -387,6 +530,8 @@ class MainViewModel: ObservableObject {
 
     @AppStorage("silenceThreshold") private var silenceThreshold: Double = 2.0
     @AppStorage("serverURL") private var serverURL: String = "http://192.168.0.X:18800"
+    @AppStorage("useGateway") private var useGateway: Bool = true   // Standard: schneller Direkt-Pfad
+    @AppStorage("relayToken") private var relayToken: String = ""
     
     init(voipService: VoIPService, hotwordService: HotwordService) {
         self.voipService = voipService
@@ -414,6 +559,7 @@ class MainViewModel: ObservableObject {
                 self.isRecording = true
                 self.pulseScale = 1.15
                 self.statusText = L("🎙️ Aufnahme läuft...", "🎙️ Recording...")
+                Haptics.recordStart()
             }
         }
 
@@ -472,21 +618,17 @@ class MainViewModel: ObservableObject {
     func setup() async {
         // Mikrofon
         let granted = await audioService.requestPermission()
-        if !granted { showError(L("Mikrofon-Zugriff verweigern", "Microphone access denied")) }
+        if !granted { showError(L("Mikrofon-Zugriff verweigert", "Microphone access denied")) }
         
         // Bot laden
         loadBot()
         updateService()
         await testConnection()
         
-        // Hör-Modus laden
+        // Hör-Modus + Sprach-/Hotword-Konfiguration laden
         let savedMode = UserDefaults.standard.string(forKey: "listenMode") ?? "vad"
         listenMode = ListenMode(rawValue: savedMode) ?? .vad
-        let savedHotword = UserDefaults.standard.string(forKey: "hotword") ?? "hey bot"
-        hotwordService.hotword = savedHotword
-        let savedLanguage = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "en-US"
-        hotwordService.language = savedLanguage
-        vadService.language = savedLanguage
+        applyVoiceConfig()
 
         await applyListenMode(listenMode)
 
@@ -496,21 +638,17 @@ class MainViewModel: ObservableObject {
             UserDefaults.standard.set("hotword", forKey: "listenMode")
             await applyListenMode(.hotword)
         }
-        
+
         pulseScale = 1.1
+        Haptics.prepare()   // Generatoren vorwärmen → erster Impuls ohne Verzögerung
     }
     
     func reloadConfig() {
         loadBot()
         updateService()
         Task { await testConnection() }
-        
-        // Hotword + Sprache aktualisieren
-        let savedHotword = UserDefaults.standard.string(forKey: "hotword") ?? "hey bot"
-        hotwordService.hotword = savedHotword
-        let savedLanguage = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "en-US"
-        hotwordService.language = savedLanguage
-        vadService.language = savedLanguage
+
+        applyVoiceConfig()
 
         // Modus neu laden (kann in Settings geändert worden sein)
         let newModeRaw = UserDefaults.standard.string(forKey: "listenMode") ?? "vad"
@@ -518,6 +656,60 @@ class MainViewModel: ObservableObject {
         if newMode != listenMode {
             Task { await applyListenMode(newMode) }
         }
+    }
+
+    /// Eine Quelle der Wahrheit für Hotword, Erkennungssprache (Default Deutsch) und die
+    /// VAD-Pause/Resume-Wörter — überträgt die Settings an die Services (setup + reloadConfig).
+    private func applyVoiceConfig() {
+        let d = UserDefaults.standard
+        hotwordService.hotword   = d.string(forKey: "hotword") ?? "hey bot"
+        let lang = d.string(forKey: "hotwordLanguage") ?? "de-DE"
+        hotwordService.language  = lang
+        vadService.language      = lang
+        silenceDetector.language = lang
+        vadService.pauseHotword  = (d.string(forKey: "vadPauseHotword")  ?? "aufnahme pause").lowercased()
+        vadService.resumeHotword = (d.string(forKey: "vadResumeHotword") ?? "aufnahme weiter").lowercased()
+    }
+
+    // MARK: - Wiedergabe-Steuerung (Bot-Audio)
+
+    func togglePlayPause() {
+        guard isPlaying else { return }
+        if isPaused { audioService.resume() } else { audioService.pause() }
+        isPaused = audioService.isPaused
+    }
+
+    func stopPlayback() {
+        audioService.stop()
+        isPlaying = false
+        isPaused = false
+    }
+
+    /// Baut die teilbaren Verlaufs-Dokumente (Datei wird erst beim Teilen geschrieben,
+    /// nicht bei jedem Render). Für „Teilen" → in Dateien sichern.
+    func chatMarkdownFile() -> ChatMarkdownFile {
+        ChatMarkdownFile(messages: messages, botName: selectedBot?.name ?? "Bot")
+    }
+    func chatTextFile() -> ChatTextFile {
+        ChatTextFile(messages: messages, botName: selectedBot?.name ?? "Bot")
+    }
+
+    // MARK: - Foreground-Rückkehr
+
+    /// Beim Zurückkehren in den Vordergrund: Session reaktivieren und den Hör-Modus
+    /// wieder anwerfen, falls er (nach langem Hintergrund/Interruption) ausgegangen ist.
+    func onForeground() async {
+        AudioSessionManager.shared.reactivate()
+        guard !isRecording, !isPlaying else { return }
+        switch listenMode {
+        case .vad:
+            if !vadService.isActive { await vadService.start() }
+        case .hotword:
+            if !hotwordService.isListening { hotwordService.startListening() }
+        case .off:
+            break
+        }
+        await testConnection()
     }
     
     // MARK: - Hör-Modus
@@ -566,7 +758,8 @@ class MainViewModel: ObservableObject {
     
     private func onHotwordDetected() {
         guard !isRecording, !isPlaying else { return }
-        
+        Haptics.detected()
+
         // Ton spielen, exakte Dauer zurückbekommen, dann erst Recording starten.
         // Session-Rekonfiguration in startRecording() würde AVAudioPlayer unterbrechen.
         let soundDuration = HotwordService.playActivationSound()
@@ -593,6 +786,7 @@ class MainViewModel: ObservableObject {
         do {
             _ = try audioService.startRecording()
             isRecording = true
+            Haptics.recordStart()
             statusText = L("🎙️ Aufnahme läuft...", "🎙️ Recording...")
             errorMessage = nil
             pulseScale = 1.15
@@ -612,6 +806,7 @@ class MainViewModel: ObservableObject {
     func stopAndSend() {
         guard isRecording, let url = audioService.stopRecording() else { return }
         isRecording = false
+        Haptics.sendTap()
         pulseScale = 1.0
         silenceDetector.stop()
         HotwordService.playSendSound()
@@ -634,13 +829,20 @@ class MainViewModel: ObservableObject {
                         "Server not configured — open Settings"))
             return
         }
-        
+        // Egal wie wir hier rausgehen (Erfolg, Fehler, Abspielfehler) → Hör-Modus kommt zurück.
+        defer {
+            pulseScale = 1.0
+            BackgroundKeepAlive.shared.endBackgroundTask()
+            restoreHotword()
+        }
+
         statusText = L("📤 Sende Text...", "📤 Sending text...")
-        
+
         do {
             statusText = L("⏳ Warte auf Antwort...", "⏳ Waiting for reply...")
             let reply = try await relay.sendText(text: text)
-            
+            Haptics.replyArrived()
+
             switch reply {
             case .voice(let voiceURL, let botText, _):
                 let cleanedBot = botText.map { cleanBotResponse($0) }
@@ -649,33 +851,48 @@ class MainViewModel: ObservableObject {
                     lastResponseText = t
                     suggestions = extractSuggestions(from: t)
                 }
-                statusText = L("🔊 Antwort...", "🔊 Reply...")
-                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
-                isPlaying = true
-                pulseScale = 1.1
-                try audioService.play(url: voiceURL)
-                while audioService.isPlaying {
-                    try? await Task.sleep(for: .milliseconds(200))
-                }
-                
+                await playReply(voiceURL)
+
             case .text(let responseText, _):
                 let cleanedResp = cleanBotResponse(responseText)
                 lastResponseText = cleanedResp
                 suggestions = extractSuggestions(from: cleanedResp)
                 messages.append(Message(text: cleanedResp, audioURL: nil, isFromUser: false))
             }
-            
+
             statusText = L("Halten zum Sprechen", "Hold to speak")
-            
+
         } catch {
             showError(error.localizedDescription)
             statusText = L("Halten zum Sprechen", "Hold to speak")
         }
-        
+    }
+
+    /// Spielt die Bot-Audio-Antwort ab und wartet, bis sie fertig oder gestoppt ist.
+    /// Optionaler kurzer Hinweis-Ton kurz VOR der Stimme (gegen Erschrecken) — nur wenn
+    /// aktiviert, sonst keine zusätzliche Latenz. Pausiert solange VAD/Hotword.
+    private func playReply(_ voiceURL: URL) async {
+        statusText = L("🔊 Antwort...", "🔊 Reply...")
+        pauseListening()              // VAD/Hotword pausieren, damit der Bot sich nicht selbst hört
+        isPlaying = true
+        isPaused = false
+        pulseScale = 1.1
+
+        if UserDefaults.standard.bool(forKey: "cueBeforeReply") {
+            HotwordService.playReplyCueSound()
+            try? await Task.sleep(for: .milliseconds(280))
+        }
+
+        do {
+            try audioService.play(url: voiceURL)
+            while audioService.isPlaying {
+                try? await Task.sleep(for: .milliseconds(200))
+            }
+        } catch {
+            showError(L("Audio konnte nicht abgespielt werden", "Could not play audio"))
+        }
         isPlaying = false
-        pulseScale = 1.0
-        BackgroundKeepAlive.shared.endBackgroundTask()
-        restoreHotword()
+        isPaused = false
     }
     
     // MARK: - Send + Receive (Voice)
@@ -688,53 +905,36 @@ class MainViewModel: ObservableObject {
             restoreHotword()
             return
         }
+        // Egal wie wir hier rausgehen → Hör-Modus kommt garantiert zurück.
+        defer {
+            pulseScale = 1.0
+            BackgroundKeepAlive.shared.endBackgroundTask()
+            restoreHotword()
+        }
 
         statusText = L("📤 Sende...", "📤 Sending...")
 
         do {
             statusText = L("⏳ Warte auf Antwort...", "⏳ Waiting for reply...")
             let reply = try await relay.sendVoice(audioURL: audioURL)
+            Haptics.replyArrived()
 
             switch reply {
             case .voice(let voiceURL, let botText, let transcript):
-                // User-Nachricht mit Transkript aktualisieren — stabile ID behalten!
-                if let t = transcript, !t.isEmpty {
-                    lastUserTranscript = t
-                    if let idx = messages.lastIndex(where: { $0.isFromUser }) {
-                        let existing = messages[idx]
-                        messages[idx] = Message(id: existing.id, text: t,
-                                                audioURL: existing.audioURL, isFromUser: true)
-                    }
-                }
+                updateLastUserTranscript(transcript)
                 let cleanedBot = botText.map { cleanBotResponse($0) }
                 messages.append(Message(text: cleanedBot, audioURL: voiceURL, isFromUser: false))
                 if let t = cleanedBot {
                     lastResponseText = t
                     suggestions = extractSuggestions(from: t)
                 } else {
-                    // Bot hat nur Audio gesendet (kein Text) — Hauptscreen-Placeholder
-                    lastResponseText = lastResponseText ?? "🎵"
+                    lastResponseText = L("🔊 Audio-Antwort", "🔊 Audio reply")
                     suggestions = []
                 }
-                statusText = L("🔊 Antwort...", "🔊 Reply...")
-                pauseListening()   // stop VAD/hotword so bot doesn't hear itself
-                isPlaying = true
-                pulseScale = 1.1
-                try audioService.play(url: voiceURL)
-                while audioService.isPlaying {
-                    try? await Task.sleep(for: .milliseconds(200))
-                }
+                await playReply(voiceURL)
 
             case .text(let text, let transcript):
-                // Transkript der User-Aufnahme setzen — stabile ID behalten!
-                if let t = transcript, !t.isEmpty {
-                    lastUserTranscript = t
-                    if let idx = messages.lastIndex(where: { $0.isFromUser }) {
-                        let existing = messages[idx]
-                        messages[idx] = Message(id: existing.id, text: t,
-                                                audioURL: existing.audioURL, isFromUser: true)
-                    }
-                }
+                updateLastUserTranscript(transcript)
                 let cleanedText = cleanBotResponse(text)
                 lastResponseText = cleanedText
                 suggestions = extractSuggestions(from: cleanedText)
@@ -747,12 +947,18 @@ class MainViewModel: ObservableObject {
             showError(error.localizedDescription)
             statusText = L("Halten zum Sprechen", "Hold to speak")
         }
+    }
 
-        isPlaying = false
-        pulseScale = 1.0
-        // Background-Task beenden — wir sind wieder bereit, kein kritischer Vorgang läuft
-        BackgroundKeepAlive.shared.endBackgroundTask()
-        restoreHotword()
+    /// Setzt das Transkript der User-Aufnahme + aktualisiert die letzte User-Nachricht
+    /// (stabile ID behalten, damit die Sprechblase nicht „springt").
+    private func updateLastUserTranscript(_ transcript: String?) {
+        guard let t = transcript, !t.isEmpty else { return }
+        lastUserTranscript = t
+        if let idx = messages.lastIndex(where: { $0.isFromUser }) {
+            let existing = messages[idx]
+            messages[idx] = Message(id: existing.id, text: t,
+                                    audioURL: existing.audioURL, isFromUser: true)
+        }
     }
     
     /// Extrahiert bis zu 3 kurze Antwort-Vorschläge aus Bot-Text.
@@ -848,8 +1054,18 @@ class MainViewModel: ObservableObject {
     
     private func updateService() {
         let username = selectedBot?.username ?? ""
-        relayService = RelayService(serverURL: serverURL, botUsername: username)
+        let r = RelayService(serverURL: serverURL, botUsername: username)
+        r.useGateway = useGateway        // Direkt übers Gateway (/talk) vs. Telegram (/voice)
+        r.authToken = relayToken         // Bearer-Token für die Relay-Auth
+        // Ziel + Persona (Claude-Terminal-Bridge; Default openclaw → unverändertes Verhalten)
+        r.target = UserDefaults.standard.string(forKey: "chatTarget") ?? "openclaw"
+        let neutral = UserDefaults.standard.bool(forKey: "claudeNeutral")
+        r.persona = (r.target == "claude" && !neutral) ? (selectedBot?.name ?? "neutral") : "neutral"
+        relayService = r
     }
+
+    /// Wird aufgerufen wenn der Ziel-/Persona-Toggle auf der Hauptseite umgeschaltet wird.
+    func refreshRelayTarget() { updateService() }
 
     private func testConnection() async {
         guard let r = relayService else { isConnected = false; return }

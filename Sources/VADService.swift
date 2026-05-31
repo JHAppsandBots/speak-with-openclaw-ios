@@ -56,7 +56,9 @@ class VADService: NSObject, ObservableObject {
     // Pre-roll
     private var prerollBuffers: [AVAudioPCMBuffer] = []
     private var prerollDuration: Double = 0.0
-    private let prerollMaxDuration: Double = 0.6
+    // Pre-roll deutlich erhöht (0.6 → 1.2 s): erfasst den Sprechanfang zuverlässig,
+    // auch wenn Onset-Erkennung + Glättung etwas Vorlauf brauchen.
+    private let prerollMaxDuration: Double = 1.2
 
     // Kalibrierung
     private var calibrationSamples: [Float] = []
@@ -244,7 +246,8 @@ class VADService: NSObject, ObservableObject {
     private func processMonitoringBuffer(_ buffer: AVAudioPCMBuffer, db: Float, format: AVAudioFormat) {
         // Pre-roll
         let bufDuration = Double(buffer.frameLength) / format.sampleRate
-        prerollBuffers.append(copyBuffer(buffer))
+        guard let bufCopy = copyBuffer(buffer) else { return }
+        prerollBuffers.append(bufCopy)
         prerollDuration += bufDuration
         while prerollDuration > prerollMaxDuration + 0.1, !prerollBuffers.isEmpty {
             let oldest = prerollBuffers.removeFirst()
@@ -258,7 +261,9 @@ class VADService: NSObject, ObservableObject {
 
         if smoothed > speechThreshold {
             if speechStartTime == nil { speechStartTime = Date() }
-            if Date().timeIntervalSince(speechStartTime!) >= 0.30 {
+            // Onset-Bestätigung von 0.30 → 0.12 s: Aufnahme startet deutlich früher,
+            // zusammen mit dem 1.2 s Pre-Roll geht so kein Sprechanfang verloren.
+            if Date().timeIntervalSince(speechStartTime!) >= 0.12 {
                 beginRecording(format: format)
             }
         } else {
@@ -456,13 +461,18 @@ class VADService: NSObject, ObservableObject {
         return 20.0 * log10(rms)
     }
 
-    private func copyBuffer(_ src: AVAudioPCMBuffer) -> AVAudioPCMBuffer {
-        let copy = AVAudioPCMBuffer(pcmFormat: src.format, frameCapacity: src.frameLength)!
+    /// Kopiert einen Tap-Buffer (der vom System wiederverwendet wird) los. Liefert nil bei
+    /// leeren Buffern / ungültigem Format — das verhindert einen Crash durch erzwungenes Unwrap
+    /// (kommt bei frameLength==0 direkt nach Route-Wechseln vor).
+    private func copyBuffer(_ src: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {
+        guard src.frameLength > 0,
+              let copy = AVAudioPCMBuffer(pcmFormat: src.format, frameCapacity: src.frameLength)
+        else { return nil }
         copy.frameLength = src.frameLength
         if let srcData = src.floatChannelData, let dstData = copy.floatChannelData {
             let n = Int(src.frameLength)
             for ch in 0..<Int(src.format.channelCount) {
-                dstData[ch].assign(from: srcData[ch], count: n)
+                dstData[ch].update(from: srcData[ch], count: n)
             }
         }
         return copy

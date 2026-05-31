@@ -1,6 +1,5 @@
 import Foundation
 import PushKit
-import AVFoundation
 
 /// VoIPService — Hält die App im Hintergrund aktiv (auch bei gesperrtem Handy)
 /// Nutzt PushKit VoIP Push um im Hintergrund zu bleiben
@@ -47,27 +46,5 @@ class VoIPService: NSObject, ObservableObject, PKPushRegistryDelegate {
                       didInvalidatePushTokenFor type: PKPushType) {
         voipToken = nil
         isRegistered = false
-    }
-    
-    // MARK: - Audio Session für Hintergrund
-    
-    /// Konfiguriert Audio Session so dass sie im Hintergrund läuft
-    static func configureBackgroundAudio() {
-        do {
-            let session = AVAudioSession.sharedInstance()
-            // mode: .default (nicht .voiceChat) — voiceChat würde Bluetooth-Routing stören
-            // .allowBluetoothHFP: Bluetooth-Headset-Mikrofon (AirPods etc.)
-            // .allowBluetoothA2DP: Bluetooth-Audio-Ausgabe
-            // : Lautsprecher-Fallback wenn kein externes Gerät
-            // .mixWithOthers: andere Audio-Apps werden nicht unterbrochen
-            try session.setCategory(
-                .playAndRecord,
-                mode: .default,
-                options: [.allowBluetoothHFP, .allowBluetoothA2DP, .mixWithOthers]
-            )
-            try session.setActive(true)
-        } catch {
-            print("VoIPService: Audio session error: \(error)")
-        }
     }
 }

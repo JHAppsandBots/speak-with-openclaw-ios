@@ -102,6 +102,32 @@ class AudioSessionManager: ObservableObject {
         }
     }
 
+    /// Robuste Reaktivierung für Foreground-Rückkehr und nach Unterbrechungen.
+    /// Falls die Session beim App-Start noch nie konfiguriert wurde → konfigurieren.
+    /// Sonst: Session aktivieren + Output-Route anhand der aktuell verbundenen Geräte
+    /// neu bewerten (Kopfhörer da → Kopfhörer, sonst Lautsprecher). KEIN setCategory.
+    func reactivate() {
+        guard isConfigured else { configure(); return }
+        let session = AVAudioSession.sharedInstance()
+        do {
+            try session.setActive(true, options: [])
+            assertOutputRoute(session)
+            updateRouteInfo()
+        } catch {
+            print("AudioSessionManager: reactivate Fehler \(error)")
+        }
+    }
+
+    /// Setzt die Output-Route konsistent: externes Gerät (Kopfhörer/BT/AirPlay) → System wählt es,
+    /// nichts verbunden → Lautsprecher (statt leisem Earpiece).
+    private func assertOutputRoute(_ session: AVAudioSession) {
+        let hasExternal = session.currentRoute.outputs.contains {
+            $0.portType == .bluetoothHFP || $0.portType == .bluetoothA2DP ||
+            $0.portType == .headphones   || $0.portType == .airPlay
+        }
+        try? session.overrideOutputAudioPort(hasExternal ? .none : .speaker)
+    }
+
     // MARK: - Route-Handling
 
     private func handleRouteChange(_ notification: Notification) {
@@ -141,9 +167,7 @@ class AudioSessionManager: ObservableObject {
 
         case .ended:
             print("AudioSessionManager: Audio-Unterbrechung beendet → Session reaktivieren")
-            let session = AVAudioSession.sharedInstance()
-            try? session.setActive(true, options: [])
-            updateRouteInfo()
+            reactivate()
 
         @unknown default: break
         }

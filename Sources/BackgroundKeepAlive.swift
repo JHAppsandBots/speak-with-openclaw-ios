@@ -42,11 +42,11 @@ class BackgroundKeepAlive: ObservableObject {
 
     func beginBackgroundTask() {
         guard backgroundTaskID == .invalid else { return }
+        // Überbrückt nur das kurze Sende-/Antwort-Fenster. Beim Ablauf NUR sauber beenden —
+        // kein erneutes beginBackgroundTask (Endlos-Renew strafft iOS ab). Der echte
+        // Dauerbetrieb läuft offiziell über UIBackgroundModes: audio + aktive AVAudioSession.
         backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "BotVoiceAudio") { [weak self] in
-            Task { @MainActor [weak self] in
-                self?.endBackgroundTask()
-                self?.beginBackgroundTask()
-            }
+            Task { @MainActor [weak self] in self?.endBackgroundTask() }
         }
     }
 

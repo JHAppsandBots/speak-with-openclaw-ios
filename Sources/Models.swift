@@ -1,4 +1,7 @@
 import Foundation
+import SwiftUI
+import CoreTransferable
+import UniformTypeIdentifiers
 
 /// A bot the user wants to talk to
 struct Bot: Identifiable, Codable {
@@ -18,7 +21,8 @@ struct Bot: Identifiable, Codable {
 }
 
 extension Bot {
-    /// No presets — user enters their own bot credentials during onboarding.
+    /// No presets — the user adds their own bots during onboarding
+    /// (keine personenbezogenen Bot-Handles im öffentlichen Repo).
     static let presets: [Bot] = []
 
     static func saveAll(_ bots: [Bot]) {
@@ -90,5 +94,84 @@ struct ChatHistory {
     /// Delete all chat histories
     static func deleteAll() {
         UserDefaults.standard.removeObject(forKey: key)
+    }
+}
+
+// MARK: - Markdown-Export (Teilen → in Dateien sichern)
+
+/// Teilbares Markdown-Dokument des Chat-Verlaufs. Die Datei wird erst beim tatsächlichen
+/// Teilen geschrieben (nicht bei jedem View-Render), und mit `.md`-Endung in Dateien speicherbar.
+struct ChatMarkdownFile: Transferable {
+    let messages: [Message]
+    let botName: String
+
+    private var filename: String {
+        let safe = botName.components(separatedBy: CharacterSet(charactersIn: "/\\:")).joined(separator: "-")
+        return "Speak with Claw – \(safe).md"
+    }
+
+    func markdown() -> String {
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "de_DE")
+        df.dateFormat = "dd.MM.yyyy, HH:mm"
+        let tf = DateFormatter(); tf.dateFormat = "HH:mm"
+
+        var out = "# Chat mit \(botName)\n\n"
+        out += "_Exportiert am \(df.string(from: Date())) · Speak with Claw_\n\n---\n\n"
+        for m in messages {
+            let who = m.isFromUser ? "Du" : botName
+            out += "**\(who)** · \(tf.string(from: m.timestamp))\n\n"
+            if let t = m.text, !t.isEmpty {
+                out += t + "\n\n"
+            } else if m.audioURL != nil {
+                out += "_(Sprachnachricht)_\n\n"
+            }
+        }
+        return out
+    }
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(exportedContentType: .plainText) { doc in
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent(doc.filename)
+            try doc.markdown().write(to: url, atomically: true, encoding: .utf8)
+            return SentTransferredFile(url)
+        }
+    }
+}
+
+/// Teilbares reines Textdokument (.txt) des Chat-Verlaufs — ohne Markdown-Zeichen.
+struct ChatTextFile: Transferable {
+    let messages: [Message]
+    let botName: String
+
+    private var filename: String {
+        let safe = botName.components(separatedBy: CharacterSet(charactersIn: "/\\:")).joined(separator: "-")
+        return "Speak with Claw – \(safe).txt"
+    }
+
+    func plainText() -> String {
+        let df = DateFormatter(); df.locale = Locale(identifier: "de_DE"); df.dateFormat = "dd.MM.yyyy, HH:mm"
+        let tf = DateFormatter(); tf.dateFormat = "HH:mm"
+
+        var out = "Chat mit \(botName)\nExportiert am \(df.string(from: Date())) · Speak with Claw\n"
+        out += String(repeating: "—", count: 24) + "\n\n"
+        for m in messages {
+            let who = m.isFromUser ? "Du" : botName
+            out += "\(who) · \(tf.string(from: m.timestamp))\n"
+            if let t = m.text, !t.isEmpty {
+                out += t + "\n\n"
+            } else if m.audioURL != nil {
+                out += "(Sprachnachricht)\n\n"
+            }
+        }
+        return out
+    }
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(exportedContentType: .plainText) { doc in
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent(doc.filename)
+            try doc.plainText().write(to: url, atomically: true, encoding: .utf8)
+            return SentTransferredFile(url)
+        }
     }
 }

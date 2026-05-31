@@ -127,7 +127,6 @@
 				};
 			};
 			buildConfigurationList = F8475F5898542DE7F7420C85 /* Build configuration list for PBXProject "BotVoice" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -137,6 +136,7 @@
 			mainGroup = 47D9BE53AC16341E515B321F;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			productRefGroup = 7EE069372625AF56863E9F00 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -252,7 +252,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.heyopenclaw;
+				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.speakwithopenclaw;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -270,7 +270,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.heyopenclaw;
+				PRODUCT_BUNDLE_IDENTIFIER = de.johanneshahn.speakwithopenclaw;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

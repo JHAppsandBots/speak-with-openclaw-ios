@@ -1,5 +1,7 @@
 # Speak with Claw — Xcode Setup
 
+> **Letztes Update:** 30.05.2026 · neu hier? → [START_HERE.md](START_HERE.md)
+
 ## Requirements
 
 - macOS 14+

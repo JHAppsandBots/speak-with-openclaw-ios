@@ -1,5 +1,7 @@
 # Setup Guide — Speak with Claw
 
+> **Letztes Update:** 30.05.2026 · neu hier? → [START_HERE.md](START_HERE.md)
+
 This guide walks you through everything you need to use the app.
 
 ---
@@ -73,4 +75,4 @@ Open **Speak with Claw** on your iPhone:
 → Check that your bot is configured with a voice/TTS in OpenClaw
 
 **Questions?**  
-→ Open an issue on [GitHub](https://github.com/JHAppsandBots/speak-with-openclaw-ios/issues)
+→ Open an issue on [GitHub](https://github.com/JHAppsandBots/speak-with-claw-ios/issues)

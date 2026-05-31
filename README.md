@@ -1,5 +1,7 @@
 # Speak with Claw 🦞🎤
 
+> **Letztes Update:** 30.05.2026 · neu hier? → [START_HERE.md](START_HERE.md)
+
 > A hands-free voice interface for your AI bot — no typing, no tapping.
 
 Speak with Claw is an iOS app that acts as a voice interface for Telegram bots running on [OpenClaw](https://openclaw.ai). You talk, the app automatically detects when you're done, and your bot responds with audio. No typing, no button holding, no hotword required.

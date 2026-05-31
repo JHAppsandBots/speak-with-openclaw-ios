@@ -34,9 +34,9 @@ The app does not use any third-party analytics, advertising, or tracking service
 
 ## Contact
 
-If you have questions: https://github.com/JHAppsandBots/speak-with-openclaw-ios
+If you have questions: https://github.com/JHAppsandBots/speak-with-claw-ios
 
 ---
 
 *This app is open source. You can inspect every line of code at:*  
-*https://github.com/JHAppsandBots/speak-with-openclaw-ios*
+*https://github.com/JHAppsandBots/speak-with-claw-ios*

@@ -25,10 +25,15 @@ class SilenceDetector: NSObject, ObservableObject {
     private var lastTranscriptLength = 0
     private var hasSpeechStarted = false
     
+    /// Erkennungssprache — gleiche wie HotwordService/VAD (Default Deutsch).
+    var language: String = "de-DE" {
+        didSet { speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language)) }
+    }
+
     override init() {
         super.init()
-        // Gleiche Locale wie HotwordService
-        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "de-DE"))
+        let lang = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "de-DE"
+        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: lang))
     }
     
     // MARK: - Start / Stop

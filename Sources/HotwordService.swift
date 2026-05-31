@@ -43,11 +43,10 @@ class HotwordService: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        let lang = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "en-US"
-        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: lang))
-        speechRecognizer?.delegate = self
+        // Erkennungssprache per Default Deutsch (eine Quelle der Wahrheit: language-didSet baut
+        // den Recognizer; hier nur initial setzen).
+        language = UserDefaults.standard.string(forKey: "hotwordLanguage") ?? "de-DE"
         hotwordVariants = buildVariants(hotword)
-        language = lang
     }
     
     // MARK: - Permissions
@@ -111,8 +110,6 @@ class HotwordService: NSObject, ObservableObject {
     // AVAudioPlayer — bypassed ringer switch, nutzt aktive Audio-Session
 
     private static var activationPlayer: AVAudioPlayer?
-    private static var sendPlayer: AVAudioPlayer?
-    private static var responsePlayer: AVAudioPlayer?
     private static var pauseOnPlayer: AVAudioPlayer?
     private static var pauseOffPlayer: AVAudioPlayer?
 
@@ -162,10 +159,15 @@ class HotwordService: NSObject, ObservableObject {
         AudioServicesPlaySystemSound(SystemSoundID(id))
     }
 
-    /// Antwort kommt — sanfter tiefer Ton, 3/4 Lautstärke
-    static func playResponseSound() {
-        responsePlayer = makeTonePlayer(notes: [(528, 0.18)], volume: 0.21)
-        responsePlayer?.play()
+    /// Kurzer Hinweis-Ton kurz VOR der Bot-Antwort (gegen Erschrecken) — Pendant zum
+    /// Absende-Sound. Standard: der iOS-Aufnahme-Start-Ton. Wird nur gespielt, wenn der
+    /// Caller den Toggle „cueBeforeReply" aktiviert hat → sonst keine zusätzliche Latenz.
+    static func playReplyCueSound() {
+        let id = UserDefaults.standard.object(forKey: "cueSoundID") == nil
+            ? 1113  // iOS „Aufnahme-Start"-Ton
+            : UserDefaults.standard.integer(forKey: "cueSoundID")
+        guard id != -999 else { return }
+        AudioServicesPlaySystemSound(SystemSoundID(id))
     }
 
     /// VAD Pause aktiviert — absteigender Ton (tief = pause)
